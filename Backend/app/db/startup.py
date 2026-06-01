@@ -66,7 +66,10 @@ def init_db() -> None:
         print(f"[startup] 테이블 생성 오류: {e}")
         raise
 
-    # 4. 비어 있으면 시드 투입
+    # 4. 이전 배포에서 누락됐을 수 있는 컬럼 보정 (idempotent)
+    _apply_column_patches()
+
+    # 5. 비어 있으면 시드 투입
     db: Session = SessionLocal()
     try:
         count = db.execute(text("SELECT COUNT(*) FROM facility")).scalar_one()
@@ -81,6 +84,26 @@ def init_db() -> None:
         db.close()
 
     print("[startup] DB 초기화 완료")
+
+
+# ─── 컬럼 패치 (이전 배포에서 부분 생성된 테이블 보정) ─────────────────────────────
+
+def _apply_column_patches() -> None:
+    """이전 배포에서 누락됐을 수 있는 컬럼을 ADD IF NOT EXISTS로 보정"""
+    patches = [
+        "ALTER TABLE app_user ADD COLUMN IF NOT EXISTS preferred_lang VARCHAR(10) NOT NULL DEFAULT 'ko'",
+        "ALTER TABLE notice ADD COLUMN IF NOT EXISTS memo_lang VARCHAR(10) NOT NULL DEFAULT 'ko'",
+        "ALTER TABLE guardian ADD COLUMN IF NOT EXISTS user_id BIGINT REFERENCES app_user(id)",
+        "ALTER TABLE inquiry ADD COLUMN IF NOT EXISTS answer_read_at TIMESTAMPTZ",
+    ]
+    with engine.connect() as conn:
+        for stmt in patches:
+            try:
+                conn.execute(text(stmt))
+            except Exception as e:
+                print(f"[startup] 컬럼 패치 스킵: {e}")
+        conn.commit()
+    print("[startup] 컬럼 패치 완료")
 
 
 # ─── 기본 시드 ────────────────────────────────────────────────────────────────

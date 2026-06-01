@@ -21,11 +21,13 @@ class Settings(BaseSettings):
     @field_validator("DATABASE_URL", mode="before")
     @classmethod
     def fix_database_url(cls, v: str) -> str:
-        """Render는 postgres:// 또는 postgresql:// 형식 제공 → psycopg v3 드라이버로 변환"""
+        """Render는 postgres:// 또는 postgresql:// 형식 제공
+        → psycopg2 드라이버로 변환 (Render 환경 호환성)
+        로컬 .env에 이미 +psycopg 가 있으면 그대로 유지"""
         if v.startswith("postgres://"):
-            return v.replace("postgres://", "postgresql+psycopg://", 1)
-        if v.startswith("postgresql://") and "+psycopg" not in v:
-            return v.replace("postgresql://", "postgresql+psycopg://", 1)
+            return v.replace("postgres://", "postgresql+psycopg2://", 1)
+        if v.startswith("postgresql://") and "+" not in v:
+            return v.replace("postgresql://", "postgresql+psycopg2://", 1)
         return v
 
 
