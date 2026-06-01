@@ -1,6 +1,6 @@
 """
 Render 배포용 DB 자동 초기화
-- ENUM 타입 생성 (중복 무시)
+- ENUM 타입 생성 (각 구문 개별 실행 — psycopg v3 호환)
 - 모든 테이블 생성 (IF NOT EXISTS)
 - facility 테이블이 비어 있으면 기본 시드 데이터 투입
 """
@@ -10,7 +10,6 @@ from sqlalchemy import text
 from sqlalchemy.orm import Session
 
 from app.db.session import Base, SessionLocal, engine
-
 
 # 모든 모델을 Base.metadata에 등록하기 위해 import
 from app.models.models import (  # noqa: F401
@@ -23,61 +22,68 @@ from app.models.meal_schedule import MealLog, ScheduleEvent  # noqa: F401
 from app.models.album import Album, album_resident_table  # noqa: F401
 
 
-# ─── ENUM 생성 SQL (idempotent) ────────────────────────────────────────────────
+# ─── ENUM 정의 (각각 개별 실행해야 psycopg v3에서 동작) ──────────────────────────
 
-_ENUM_SQL = """
-DO $$ BEGIN CREATE TYPE user_role AS ENUM ('CAREGIVER','SOCIAL_WORKER','ADMIN');
-EXCEPTION WHEN duplicate_object THEN NULL; END $$;
-
-DO $$ BEGIN CREATE TYPE gender_type AS ENUM ('M','F');
-EXCEPTION WHEN duplicate_object THEN NULL; END $$;
-
-DO $$ BEGIN CREATE TYPE notice_tone AS ENUM ('FRIENDLY','POLITE','EMPATHETIC');
-EXCEPTION WHEN duplicate_object THEN NULL; END $$;
-
-DO $$ BEGIN CREATE TYPE notice_status AS ENUM ('DRAFT','SENT');
-EXCEPTION WHEN duplicate_object THEN NULL; END $$;
-
-DO $$ BEGIN CREATE TYPE inquiry_category AS ENUM ('HEALTH','ADMIN_AFFAIRS','VISIT','MEAL','OTHER');
-EXCEPTION WHEN duplicate_object THEN NULL; END $$;
-
-DO $$ BEGIN CREATE TYPE inquiry_status AS ENUM ('UNREAD','READ','ANSWERED');
-EXCEPTION WHEN duplicate_object THEN NULL; END $$;
-
-DO $$ BEGIN CREATE TYPE classification_status AS ENUM ('SUCCESS','THRESHOLD_FALLBACK','LLM_ERROR_FALLBACK');
-EXCEPTION WHEN duplicate_object THEN NULL; END $$;
-
-DO $$ BEGIN CREATE TYPE meal_type AS ENUM ('BREAKFAST','LUNCH','DINNER','SNACK');
-EXCEPTION WHEN duplicate_object THEN NULL; END $$;
-
-DO $$ BEGIN CREATE TYPE schedule_event_type AS ENUM ('FACILITY_EVENT','BIRTHDAY','HOLIDAY');
-EXCEPTION WHEN duplicate_object THEN NULL; END $$;
-
-ALTER TYPE user_role ADD VALUE IF NOT EXISTS 'GUARDIAN';
-"""
+_ENUM_STMTS = [
+    "DO $$ BEGIN CREATE TYPE user_role AS ENUM ('CAREGIVER','SOCIAL_WORKER','ADMIN'); EXCEPTION WHEN duplicate_object THEN NULL; END $$",
+    "DO $$ BEGIN CREATE TYPE gender_type AS ENUM ('M','F'); EXCEPTION WHEN duplicate_object THEN NULL; END $$",
+    "DO $$ BEGIN CREATE TYPE notice_tone AS ENUM ('FRIENDLY','POLITE','EMPATHETIC'); EXCEPTION WHEN duplicate_object THEN NULL; END $$",
+    "DO $$ BEGIN CREATE TYPE notice_status AS ENUM ('DRAFT','SENT'); EXCEPTION WHEN duplicate_object THEN NULL; END $$",
+    "DO $$ BEGIN CREATE TYPE inquiry_category AS ENUM ('HEALTH','ADMIN_AFFAIRS','VISIT','MEAL','OTHER'); EXCEPTION WHEN duplicate_object THEN NULL; END $$",
+    "DO $$ BEGIN CREATE TYPE inquiry_status AS ENUM ('UNREAD','READ','ANSWERED'); EXCEPTION WHEN duplicate_object THEN NULL; END $$",
+    "DO $$ BEGIN CREATE TYPE classification_status AS ENUM ('SUCCESS','THRESHOLD_FALLBACK','LLM_ERROR_FALLBACK'); EXCEPTION WHEN duplicate_object THEN NULL; END $$",
+    "DO $$ BEGIN CREATE TYPE meal_type AS ENUM ('BREAKFAST','LUNCH','DINNER','SNACK'); EXCEPTION WHEN duplicate_object THEN NULL; END $$",
+    "DO $$ BEGIN CREATE TYPE schedule_event_type AS ENUM ('FACILITY_EVENT','BIRTHDAY','HOLIDAY'); EXCEPTION WHEN duplicate_object THEN NULL; END $$",
+]
 
 
 def init_db() -> None:
     """앱 시작 시 호출 — 스키마 보장 + 최초 1회 시드"""
-    # 1. ENUM 생성
+    print("[startup] DB 초기화 시작...")
+
+    # 1. ENUM 타입 생성 (구문별 개별 실행)
     with engine.connect() as conn:
-        conn.execute(text(_ENUM_SQL))
+        for stmt in _ENUM_STMTS:
+            try:
+                conn.execute(text(stmt))
+            except Exception as e:
+                print(f"[startup] ENUM 생성 스킵 (이미 존재): {e}")
         conn.commit()
 
-    # 2. 테이블 생성 (이미 있으면 스킵)
-    Base.metadata.create_all(engine, checkfirst=True)
+    # 2. GUARDIAN 값 추가 (autocommit 필요 — ALTER TYPE ADD VALUE 제약)
+    with engine.connect() as conn:
+        try:
+            conn.execute(text("ALTER TYPE user_role ADD VALUE IF NOT EXISTS 'GUARDIAN'"))
+            conn.commit()
+        except Exception as e:
+            print(f"[startup] GUARDIAN 추가 스킵: {e}")
 
-    # 3. 비어 있으면 시드 투입
+    # 3. 테이블 생성 (이미 있으면 스킵)
+    try:
+        Base.metadata.create_all(engine, checkfirst=True)
+        print("[startup] 테이블 생성 완료")
+    except Exception as e:
+        print(f"[startup] 테이블 생성 오류: {e}")
+        raise
+
+    # 4. 비어 있으면 시드 투입
     db: Session = SessionLocal()
     try:
         count = db.execute(text("SELECT COUNT(*) FROM facility")).scalar_one()
         if count == 0:
+            print("[startup] 시드 데이터 투입 시작...")
             _seed_basic(db)
+        else:
+            print(f"[startup] 시드 스킵 (facility {count}건 존재)")
+    except Exception as e:
+        print(f"[startup] 시드 오류: {e}")
     finally:
         db.close()
 
+    print("[startup] DB 초기화 완료")
 
-# ─── 기본 시드 (시설 / 직원 / 어르신 / 보호자) ───────────────────────────────────
+
+# ─── 기본 시드 ────────────────────────────────────────────────────────────────
 
 def _seed_basic(db: Session) -> None:
     pw = bcrypt.hashpw(b"test1234", bcrypt.gensalt(12)).decode()
@@ -89,61 +95,62 @@ def _seed_basic(db: Session) -> None:
     ))
     db.flush()
 
-    # 직원 (4명)
+    # 직원 (4명) — 파라미터 바인딩으로 인코딩 문제 방지
     staff = [
-        ("minji@happy.kr",   "김민지", "CAREGIVER",     "ko"),
-        ("seojun@happy.kr",  "박서준", "SOCIAL_WORKER", "ko"),
-        ("admin@happy.kr",   "관리자", "ADMIN",         "ko"),
-        ("huong@happy.kr",   "후엉",   "CAREGIVER",     "vi"),
+        {"email": "minji@happy.kr",  "name": "김민지", "role": "CAREGIVER",     "lang": "ko"},
+        {"email": "seojun@happy.kr", "name": "박서준", "role": "SOCIAL_WORKER", "lang": "ko"},
+        {"email": "admin@happy.kr",  "name": "관리자", "role": "ADMIN",         "lang": "ko"},
+        {"email": "huong@happy.kr",  "name": "후엉",   "role": "CAREGIVER",     "lang": "vi"},
     ]
-    for email, name, role, lang in staff:
+    for s in staff:
         db.execute(text(
             "INSERT INTO app_user (facility_id, email, password_hash, name, role, preferred_lang) "
-            f"VALUES (1, '{email}', '{pw}', '{name}', '{role}', '{lang}')"
-        ))
+            "VALUES (1, :email, :pw, :name, CAST(:role AS user_role), :lang)"
+        ), {"email": s["email"], "pw": pw, "name": s["name"], "role": s["role"], "lang": s["lang"]})
     db.flush()
 
     # 어르신 (8명)
     residents = [
-        ("김순자", "1943-03-11", "301호", "3등급", "당뇨, 경증 인지저하", "F"),
-        ("이복남", "1940-07-22", "302호", "2등급", "고혈압", "F"),
-        ("박정호", "1938-12-05", "303호", "1등급", "와상, 휠체어 사용", "M"),
-        ("최영자", "1945-01-30", "304호", "4등급", "무릎 관절염", "F"),
-        ("정달수", "1941-09-14", "305호", "2등급", "치매 초기", "M"),
-        ("한말례", "1939-05-08", "306호", "3등급", "청력 저하", "F"),
-        ("오금자", "1944-11-19", "307호", "5등급", "특이사항 없음", "F"),
-        ("윤상철", "1937-02-27", "308호", "1등급", "와상, 위루관", "M"),
+        {"name": "김순자", "birth": "1943-03-11", "room": "301호", "level": "3등급", "notes": "당뇨, 경증 인지저하", "gender": "F"},
+        {"name": "이복남", "birth": "1940-07-22", "room": "302호", "level": "2등급", "notes": "고혈압",             "gender": "F"},
+        {"name": "박정호", "birth": "1938-12-05", "room": "303호", "level": "1등급", "notes": "와상, 휠체어 사용", "gender": "M"},
+        {"name": "최영자", "birth": "1945-01-30", "room": "304호", "level": "4등급", "notes": "무릎 관절염",        "gender": "F"},
+        {"name": "정달수", "birth": "1941-09-14", "room": "305호", "level": "2등급", "notes": "치매 초기",          "gender": "M"},
+        {"name": "한말례", "birth": "1939-05-08", "room": "306호", "level": "3등급", "notes": "청력 저하",          "gender": "F"},
+        {"name": "오금자", "birth": "1944-11-19", "room": "307호", "level": "5등급", "notes": "특이사항 없음",      "gender": "F"},
+        {"name": "윤상철", "birth": "1937-02-27", "room": "308호", "level": "1등급", "notes": "와상, 위루관",       "gender": "M"},
     ]
-    for name, bdate, room, level, precautions, gender in residents:
+    for r in residents:
         db.execute(text(
             "INSERT INTO resident (facility_id, name, birth_date, room_number, care_level, precautions, gender) "
-            f"VALUES (1, '{name}', '{bdate}', '{room}', '{level}', '{precautions}', '{gender}')"
-        ))
+            "VALUES (1, :name, :birth, :room, :level, :notes, CAST(:gender AS gender_type))"
+        ), r)
     db.flush()
 
-    # 전 직원 → 전 어르신 담당 배정
+    # 담당 배정 (전 직원 → 전 어르신)
     db.execute(text(
         "INSERT INTO assignment (user_id, resident_id) "
         "SELECT u.id, r.id FROM app_user u CROSS JOIN resident r "
-        "WHERE u.role != 'GUARDIAN'"
+        "WHERE u.role != CAST('GUARDIAN' AS user_role)"
     ))
 
     # 보호자 계정 + guardian 연결
     guardians = [
-        ("boram@family.kr",  "김보람", "김순자", "자녀"),
-        ("jiwon@family.kr",  "이지원", "이복남", "자녀"),
-        ("hyeonu@family.kr", "박현우", "박정호", "자녀"),
+        {"email": "boram@family.kr",  "name": "김보람", "res": "김순자", "rel": "자녀"},
+        {"email": "jiwon@family.kr",  "name": "이지원", "res": "이복남", "rel": "자녀"},
+        {"email": "hyeonu@family.kr", "name": "박현우", "res": "박정호", "rel": "자녀"},
     ]
-    for email, name, resident_name, rel in guardians:
+    for g in guardians:
         db.execute(text(
             "INSERT INTO app_user (facility_id, email, password_hash, name, role) "
-            f"VALUES (1, '{email}', '{pw}', '{name}', 'GUARDIAN')"
-        ))
+            "VALUES (1, :email, :pw, :name, CAST('GUARDIAN' AS user_role))"
+        ), {"email": g["email"], "pw": pw, "name": g["name"]})
         db.execute(text(
             "INSERT INTO guardian (resident_id, name, relationship, user_id) "
-            f"SELECT r.id, '{name}', '{rel}', (SELECT id FROM app_user WHERE email='{email}') "
-            f"FROM resident r WHERE r.name='{resident_name}'"
-        ))
+            "SELECT r.id, :name, :rel, "
+            "  (SELECT id FROM app_user WHERE email = :email) "
+            "FROM resident r WHERE r.name = :res"
+        ), {"name": g["name"], "rel": g["rel"], "email": g["email"], "res": g["res"]})
 
     db.commit()
     print("[startup] 기본 시드 데이터 투입 완료")
