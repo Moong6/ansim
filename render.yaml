@@ -2,7 +2,6 @@ services:
   - type: web
     name: ansim-api
     env: python
-    region: singapore
     plan: free
     rootDir: Backend
     buildCommand: pip install -r requirements.txt
@@ -15,7 +14,7 @@ services:
       - key: JWT_SECRET
         generateValue: true
       - key: GEMINI_API_KEY
-        sync: false          # Render 대시보드에서 직접 입력
+        sync: false
       - key: GEMINI_MODEL
         value: gemini-2.5-flash
       - key: GEMINI_FALLBACK_MODEL
@@ -34,5 +33,4 @@ services:
 databases:
   - name: ansim-db
     plan: free
-    region: singapore
     databaseName: care_notice

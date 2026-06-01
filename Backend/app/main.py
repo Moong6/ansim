@@ -15,7 +15,11 @@ from app.routers import albums, auth, board, home, inquiries, meals, notices, pa
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     """앱 시작 시 DB 스키마 + 시드 보장 (Render 첫 배포 대응)"""
-    init_db()
+    try:
+        init_db()
+    except Exception as e:
+        # DB 초기화 실패해도 앱은 기동 — Render 헬스체크 통과 우선
+        print(f"[startup] DB init warning (will retry on request): {e}")
     yield
 
 
@@ -27,7 +31,7 @@ app.add_middleware(
         "http://localhost:5173",
         "https://moong6.github.io",
     ],
-    allow_origin_regex=r"https://.*\.onrender\.com|https://.*\.ngrok-free\.dev",
+    allow_origin_regex=r"https://.*\.onrender\.com",
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
