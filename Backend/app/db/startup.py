@@ -185,15 +185,19 @@ def _seed_basic(db: Session) -> None:
 # ─── 데모 콘텐츠 로드 ──────────────────────────────────────────────────────────
 
 def _load_demo_data_if_empty() -> None:
-    """notice 테이블이 비어 있으면 demo_data.sql을 실행해 전체 데모 데이터 로드"""
+    """meal_log 최신 날짜가 2026-06-02 미만이면 demo_data.sql 전체 reload"""
     from pathlib import Path
+    from datetime import date
 
     db: Session = SessionLocal()
     try:
-        count = db.execute(text("SELECT COUNT(*) FROM notice")).scalar_one()
-        if count > 0:
-            print(f"[startup] 데모 데이터 스킵 (notice {count}건 이미 존재)")
+        max_date = db.execute(text("SELECT MAX(meal_date) FROM meal_log")).scalar_one()
+        if max_date and max_date >= date(2026, 6, 2):
+            print(f"[startup] 데모 데이터 최신 (meal_log max={max_date}) — 스킵")
             return
+        print(f"[startup] 데모 데이터 갱신 필요 (meal_log max={max_date}) — reload")
+    except Exception as e:
+        print(f"[startup] 날짜 체크 오류: {e}")
     finally:
         db.close()
 
