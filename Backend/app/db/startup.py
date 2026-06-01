@@ -205,20 +205,30 @@ def _load_demo_data_if_empty() -> None:
     print("[startup] 데모 데이터 로드 시작...")
     sql_text = sql_path.read_text(encoding="utf-8")
 
-    # 세미콜론으로 구문 분리 후 개별 실행 (psycopg 멀티-스테이트먼트 제한 대응)
-    stmts = [s.strip() for s in sql_text.split(";") if s.strip()]
+    # 줄 단위로 구문 조립 (주석 제외, 여러 줄에 걸친 TRUNCATE 등 처리)
+    stmts: list[str] = []
+    buf = ""
+    for line in sql_text.splitlines():
+        stripped = line.strip()
+        if not stripped or stripped.startswith("--"):
+            continue  # 빈 줄·주석 스킵
+        buf = (buf + " " + stripped).strip() if buf else stripped
+        if buf.endswith(";"):
+            stmts.append(buf)
+            buf = ""
+    if buf:
+        stmts.append(buf)
 
+    errors = 0
     with engine.connect() as conn:
         for stmt in stmts:
             try:
                 conn.execute(text(stmt))
             except Exception as e:
-                # 중복 데이터 등 무시 가능한 오류는 스킵
-                err_str = str(e).lower()
-                if "duplicate" in err_str or "already exists" in err_str:
-                    pass
-                else:
-                    print(f"[startup] 데모 데이터 구문 오류 (스킵): {str(e)[:120]}")
+                errors += 1
+                conn.rollback()  # 실패한 트랜잭션 롤백 후 다음 구문 계속
+                if errors <= 3:
+                    print(f"[startup] 데모 구문 오류: {str(e)[:100]}")
         conn.commit()
 
-    print("[startup] 데모 데이터 로드 완료")
+    print(f"[startup] 데모 데이터 로드 완료 (총 {len(stmts)}개 구문, 오류 {errors}개)")

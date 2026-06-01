@@ -1,42 +1,12 @@
-﻿-- 케어알림장 데모 데이터 (로컬 → Render 이식)
--- 외래키 순환 참조(notice self-ref) 대비: 제약 지연 처리
+-- 케어알림장 데모 데이터 (INSERT 전용)
 SET session_replication_role = 'replica';
 
--- 기존 콘텐츠 초기화 (user/resident/facility는 유지)
 TRUNCATE TABLE album_resident, album, inquiry_answer, inquiry,
               notice_board, schedule_event, meal_log, report, notice, program
 RESTART IDENTITY CASCADE;
---
--- PostgreSQL database dump
---
-
-
--- Dumped from database version 16.14 (Debian 16.14-1.pgdg13+1)
--- Dumped by pg_dump version 16.14 (Debian 16.14-1.pgdg13+1)
-
-SET statement_timeout = 0;
-SET lock_timeout = 0;
-SET idle_in_transaction_session_timeout = 0;
-SET client_encoding = 'UTF8';
-SET standard_conforming_strings = on;
-SELECT pg_catalog.set_config('search_path', '', false);
-SET check_function_bodies = false;
-SET xmloption = content;
-SET client_min_messages = warning;
-SET row_security = off;
-
---
--- Data for Name: album; Type: TABLE DATA; Schema: public; Owner: -
---
 
 INSERT INTO public.album (id, facility_id, author_id, activity_date, title, description, photos, created_at, updated_at, deleted_at) VALUES (1, 1, 1, '2026-05-20 14:00:00', '실버 체조 시간', '오후 강당에서 진행한 가벼운 스트레칭 활동입니다.', '[]', '2026-06-01 10:20:57.724557+00', '2026-06-01 10:20:57.724557+00', NULL);
 INSERT INTO public.album (id, facility_id, author_id, activity_date, title, description, photos, created_at, updated_at, deleted_at) VALUES (2, 1, 2, '2026-05-08 14:00:00', '어버이날 행사', '가족분들과 함께하는 따뜻한 시간이었습니다.', '[]', '2026-06-01 10:20:57.758034+00', '2026-06-01 10:20:57.758034+00', NULL);
-
-
---
--- Data for Name: album_resident; Type: TABLE DATA; Schema: public; Owner: -
---
-
 INSERT INTO public.album_resident (album_id, resident_id, created_at) VALUES (1, 1, '2026-06-01 10:20:57.724557+00');
 INSERT INTO public.album_resident (album_id, resident_id, created_at) VALUES (1, 2, '2026-06-01 10:20:57.724557+00');
 INSERT INTO public.album_resident (album_id, resident_id, created_at) VALUES (1, 4, '2026-06-01 10:20:57.724557+00');
@@ -52,12 +22,6 @@ INSERT INTO public.album_resident (album_id, resident_id, created_at) VALUES (2,
 INSERT INTO public.album_resident (album_id, resident_id, created_at) VALUES (2, 6, '2026-06-01 10:20:57.758034+00');
 INSERT INTO public.album_resident (album_id, resident_id, created_at) VALUES (2, 7, '2026-06-01 10:20:57.758034+00');
 INSERT INTO public.album_resident (album_id, resident_id, created_at) VALUES (2, 8, '2026-06-01 10:20:57.758034+00');
-
-
---
--- Data for Name: inquiry; Type: TABLE DATA; Schema: public; Owner: -
---
-
 INSERT INTO public.inquiry (id, guardian_user_id, resident_id, facility_id, title, content, category, confidence, classification_scores, classification_status, status, read_by, read_at, answer_read_at, created_at, updated_at, deleted_at) VALUES (1, 5, 1, 1, '김순자 어르신 감기 증상 및 약 처방 관련 문의', '안녕하세요. 최근 일교차가 커져서 아침저녁으로 방이 쌀쌀한 것 같습니다. 혹시 순자 어르신께서 감기 기운이나 기침을 하지는 않으시는지 조심스럽게 여쭤봅니다. 필요하다면 가정에서 상비약을 가지고 방문하겠습니다.', 'HEALTH', 0.92, '{"MEAL": 0.02, "OTHER": 0.02, "VISIT": 0.02, "HEALTH": 0.92, "ADMIN_AFFAIRS": 0.02}', 'SUCCESS', 'READ', 1, '2026-05-04 16:30:00+00', NULL, '2026-05-04 14:00:00+00', '2026-05-04 14:00:00+00', NULL);
 INSERT INTO public.inquiry (id, guardian_user_id, resident_id, facility_id, title, content, category, confidence, classification_scores, classification_status, status, read_by, read_at, answer_read_at, created_at, updated_at, deleted_at) VALUES (2, 6, 2, 1, '어버이날 주말 대면 면회 신청합니다', '어버이날을 맞아 5월 9일 토요일 오후 2시경에 아버님 대면 면회를 신청하고 싶습니다. 참여 가능 인원은 총 3명(보호자 부부, 자녀 1명)입니다. 예약 확인 및 가능 여부를 답변해 주시면 감사하겠습니다.', 'VISIT', 0.92, '{"MEAL": 0.02, "OTHER": 0.02, "VISIT": 0.92, "HEALTH": 0.02, "ADMIN_AFFAIRS": 0.02}', 'SUCCESS', 'READ', 2, '2026-05-06 11:00:00+00', NULL, '2026-05-06 09:30:00+00', '2026-05-06 09:30:00+00', NULL);
 INSERT INTO public.inquiry (id, guardian_user_id, resident_id, facility_id, title, content, category, confidence, classification_scores, classification_status, status, read_by, read_at, answer_read_at, created_at, updated_at, deleted_at) VALUES (3, 7, 3, 1, '박정호 어르신 식사 섭취 관련 건의사항', '아버님께서 치아 통증이 있으신지 최근 밥을 절반만 드셨다는 알림장을 받았습니다. 식단 제공 시 반찬류나 고기류를 아주 잘게 다지거나 부드러운 형태로 제공해 주실 수 있으신가요? 부탁드리겠습니다.', 'MEAL', 0.92, '{"MEAL": 0.92, "OTHER": 0.02, "VISIT": 0.02, "HEALTH": 0.02, "ADMIN_AFFAIRS": 0.02}', 'SUCCESS', 'READ', 1, '2026-05-11 14:20:00+00', NULL, '2026-05-11 10:15:00+00', '2026-05-11 10:15:00+00', NULL);
@@ -71,466 +35,110 @@ INSERT INTO public.inquiry (id, guardian_user_id, resident_id, facility_id, titl
 INSERT INTO public.inquiry (id, guardian_user_id, resident_id, facility_id, title, content, category, confidence, classification_scores, classification_status, status, read_by, read_at, answer_read_at, created_at, updated_at, deleted_at) VALUES (11, 6, 2, 1, '6월 둘째 주 주말 예약 면회 신청', '6월 13일 토요일 오전 11시에 대면 면회 2명 신청하고 싶습니다. 시간이 많이 남아있지만 인원이 마감되기 전에 미리 등록하고자 하오니 예약 조치 후 확인 부탁드립니다.', 'VISIT', 0.92, '{"MEAL": 0.02, "OTHER": 0.02, "VISIT": 0.92, "HEALTH": 0.02, "ADMIN_AFFAIRS": 0.02}', 'SUCCESS', 'UNREAD', NULL, NULL, NULL, '2026-05-30 10:00:00+00', '2026-05-30 10:00:00+00', NULL);
 INSERT INTO public.inquiry (id, guardian_user_id, resident_id, facility_id, title, content, category, confidence, classification_scores, classification_status, status, read_by, read_at, answer_read_at, created_at, updated_at, deleted_at) VALUES (12, 5, 1, 1, '장기요양 세액공제 증명원 팩스 전송 요청', '직장 연말정산 보정 기간이라 요양원 납부 확인 내역이 필요해졌습니다. 회사 팩스 번호인 02-9999-8888 번으로 증명원을 한 부만 팩스 송부해 주실 수 있을까요? 늦어도 다음 주 월요일까지 부탁드립니다.', 'ADMIN_AFFAIRS', 0.92, '{"MEAL": 0.02, "OTHER": 0.02, "VISIT": 0.02, "HEALTH": 0.02, "ADMIN_AFFAIRS": 0.92}', 'SUCCESS', 'UNREAD', NULL, NULL, NULL, '2026-06-01 09:30:00+00', '2026-06-01 09:30:00+00', NULL);
 INSERT INTO public.inquiry (id, guardian_user_id, resident_id, facility_id, title, content, category, confidence, classification_scores, classification_status, status, read_by, read_at, answer_read_at, created_at, updated_at, deleted_at) VALUES (13, 5, 1, 1, '어르신 간식 및 음료 제공 관련 문의', '최근 요양원 간식 제공 내역을 보니 어르신께서 단 음료를 자주 드시는 것으로 확인되었습니다. 혈압과 혈당 관리가 필요한 상태여서 음료 섭취가 다소 걱정됩니다. 가능하다면 당 함량이 낮은 음료나 물, 차 위주로 제공해 주실 수 있는지 문의드립니다.', 'MEAL', 0.7, '{"MEAL": 0.7, "OTHER": 0.0, "VISIT": 0.0, "HEALTH": 0.3, "ADMIN_AFFAIRS": 0.0}', 'SUCCESS', 'UNREAD', NULL, NULL, NULL, '2026-06-01 11:27:15.150087+00', '2026-06-01 11:27:15.150087+00', NULL);
-
-
---
--- Data for Name: inquiry_answer; Type: TABLE DATA; Schema: public; Owner: -
---
-
-
-
---
--- Data for Name: meal_log; Type: TABLE DATA; Schema: public; Owner: -
---
-
 INSERT INTO public.meal_log (id, facility_id, author_id, meal_date, meal_type, menu_text, photos, created_at, updated_at, deleted_at) VALUES (1, 1, 2, '2026-05-04', 'BREAKFAST', '영양 야채죽
-계란국
-연두부 양념장
-숙주나물무침
-백김치', '[]', '2026-06-01 10:37:41.797912+00', '2026-06-01 10:37:41.797912+00', NULL);
 INSERT INTO public.meal_log (id, facility_id, author_id, meal_date, meal_type, menu_text, photos, created_at, updated_at, deleted_at) VALUES (2, 1, 2, '2026-05-04', 'LUNCH', '영양 곤드레밥
-구수한 배추된장국
-단호박 돼지갈비찜
-콩나물무침
-배추김치', '[{"url": "/static/meals/sample/lunch_sample2.jpg", "uploadedAt": "2026-05-26T12:00:00+09:00"}]', '2026-06-01 10:37:41.797912+00', '2026-06-01 10:37:41.797912+00', NULL);
 INSERT INTO public.meal_log (id, facility_id, author_id, meal_date, meal_type, menu_text, photos, created_at, updated_at, deleted_at) VALUES (3, 1, 2, '2026-05-04', 'DINNER', '흰쌀밥
-버섯 들깨탕
-야채 버섯불고기
-도라지나물볶음
-배추김치', '[]', '2026-06-01 10:37:41.797912+00', '2026-06-01 10:37:41.797912+00', NULL);
 INSERT INTO public.meal_log (id, facility_id, author_id, meal_date, meal_type, menu_text, photos, created_at, updated_at, deleted_at) VALUES (4, 1, 2, '2026-05-04', 'SNACK', '노란 군고구마
-새콤달콤 매실차', '[]', '2026-06-01 10:37:41.797912+00', '2026-06-01 10:37:41.797912+00', NULL);
 INSERT INTO public.meal_log (id, facility_id, author_id, meal_date, meal_type, menu_text, photos, created_at, updated_at, deleted_at) VALUES (5, 1, 2, '2026-05-05', 'BREAKFAST', '현미잡곡밥
-시원한 북어국
-고소한 두부부침
-김자반볶음
-배추김치', '[]', '2026-06-01 10:37:41.797912+00', '2026-06-01 10:37:41.797912+00', NULL);
 INSERT INTO public.meal_log (id, facility_id, author_id, meal_date, meal_type, menu_text, photos, created_at, updated_at, deleted_at) VALUES (6, 1, 2, '2026-05-05', 'LUNCH', '현미잡곡밥
-맑은 소갈비탕
-적어 구이
-무청 시래기 조림
-총각김치', '[]', '2026-06-01 10:37:41.797912+00', '2026-06-01 10:37:41.797912+00', NULL);
 INSERT INTO public.meal_log (id, facility_id, author_id, meal_date, meal_type, menu_text, photos, created_at, updated_at, deleted_at) VALUES (7, 1, 2, '2026-05-05', 'DINNER', '잡곡밥
-비지찌개
-삼치 엿장구이
-청경채무침
-깍두기', '[]', '2026-06-01 10:37:41.797912+00', '2026-06-01 10:37:41.797912+00', NULL);
 INSERT INTO public.meal_log (id, facility_id, author_id, meal_date, meal_type, menu_text, photos, created_at, updated_at, deleted_at) VALUES (8, 1, 2, '2026-05-05', 'SNACK', '생바나나
-마시는 요거트', '[]', '2026-06-01 10:37:41.797912+00', '2026-06-01 10:37:41.797912+00', NULL);
 INSERT INTO public.meal_log (id, facility_id, author_id, meal_date, meal_type, menu_text, photos, created_at, updated_at, deleted_at) VALUES (9, 1, 2, '2026-05-06', 'BREAKFAST', '흰쌀밥
-맑은 아욱국
-부드러운 계란찜
-시금치나물
-깍두기', '[]', '2026-06-01 10:37:41.797912+00', '2026-06-01 10:37:41.797912+00', NULL);
 INSERT INTO public.meal_log (id, facility_id, author_id, meal_date, meal_type, menu_text, photos, created_at, updated_at, deleted_at) VALUES (10, 1, 2, '2026-05-06', 'LUNCH', '흰쌀밥
-소고기 미역국
-고등어 구이
-애호박 나물볶음
-겉절이 김치', '[{"url": "/static/meals/sample/lunch_sample.jpg", "uploadedAt": "2026-05-27T12:00:00+09:00"}]', '2026-06-01 10:37:41.797912+00', '2026-06-01 10:37:41.797912+00', NULL);
 INSERT INTO public.meal_log (id, facility_id, author_id, meal_date, meal_type, menu_text, photos, created_at, updated_at, deleted_at) VALUES (11, 1, 2, '2026-05-06', 'DINNER', '보리잡곡밥
-순두부 백탕
-돈육 감자조림
-참나물무침
-배추김치', '[]', '2026-06-01 10:37:41.797912+00', '2026-06-01 10:37:41.797912+00', NULL);
 INSERT INTO public.meal_log (id, facility_id, author_id, meal_date, meal_type, menu_text, photos, created_at, updated_at, deleted_at) VALUES (12, 1, 2, '2026-05-06', 'SNACK', '달콤한 단호박죽
-따뜻한 우유', '[]', '2026-06-01 10:37:41.797912+00', '2026-06-01 10:37:41.797912+00', NULL);
 INSERT INTO public.meal_log (id, facility_id, author_id, meal_date, meal_type, menu_text, photos, created_at, updated_at, deleted_at) VALUES (13, 1, 2, '2026-05-07', 'BREAKFAST', '영양 야채죽
-계란국
-연두부 양념장
-숙주나물무침
-백김치', '[]', '2026-06-01 10:37:41.797912+00', '2026-06-01 10:37:41.797912+00', NULL);
 INSERT INTO public.meal_log (id, facility_id, author_id, meal_date, meal_type, menu_text, photos, created_at, updated_at, deleted_at) VALUES (14, 1, 2, '2026-05-07', 'LUNCH', '영양 곤드레밥
-구수한 배추된장국
-단호박 돼지갈비찜
-콩나물무침
-배추김치', '[{"url": "/static/meals/sample/lunch_sample2.jpg", "uploadedAt": "2026-05-26T12:00:00+09:00"}]', '2026-06-01 10:37:41.797912+00', '2026-06-01 10:37:41.797912+00', NULL);
 INSERT INTO public.meal_log (id, facility_id, author_id, meal_date, meal_type, menu_text, photos, created_at, updated_at, deleted_at) VALUES (15, 1, 2, '2026-05-07', 'DINNER', '흰쌀밥
-버섯 들깨탕
-야채 버섯불고기
-도라지나물볶음
-배추김치', '[]', '2026-06-01 10:37:41.797912+00', '2026-06-01 10:37:41.797912+00', NULL);
 INSERT INTO public.meal_log (id, facility_id, author_id, meal_date, meal_type, menu_text, photos, created_at, updated_at, deleted_at) VALUES (16, 1, 2, '2026-05-07', 'SNACK', '노란 군고구마
-새콤달콤 매실차', '[]', '2026-06-01 10:37:41.797912+00', '2026-06-01 10:37:41.797912+00', NULL);
 INSERT INTO public.meal_log (id, facility_id, author_id, meal_date, meal_type, menu_text, photos, created_at, updated_at, deleted_at) VALUES (17, 1, 2, '2026-05-08', 'BREAKFAST', '현미잡곡밥
-시원한 북어국
-고소한 두부부침
-김자반볶음
-배추김치', '[]', '2026-06-01 10:37:41.797912+00', '2026-06-01 10:37:41.797912+00', NULL);
 INSERT INTO public.meal_log (id, facility_id, author_id, meal_date, meal_type, menu_text, photos, created_at, updated_at, deleted_at) VALUES (18, 1, 2, '2026-05-08', 'LUNCH', '현미잡곡밥
-맑은 소갈비탕
-적어 구이
-무청 시래기 조림
-총각김치', '[]', '2026-06-01 10:37:41.797912+00', '2026-06-01 10:37:41.797912+00', NULL);
 INSERT INTO public.meal_log (id, facility_id, author_id, meal_date, meal_type, menu_text, photos, created_at, updated_at, deleted_at) VALUES (19, 1, 2, '2026-05-08', 'DINNER', '잡곡밥
-비지찌개
-삼치 엿장구이
-청경채무침
-깍두기', '[]', '2026-06-01 10:37:41.797912+00', '2026-06-01 10:37:41.797912+00', NULL);
 INSERT INTO public.meal_log (id, facility_id, author_id, meal_date, meal_type, menu_text, photos, created_at, updated_at, deleted_at) VALUES (20, 1, 2, '2026-05-08', 'SNACK', '생바나나
-마시는 요거트', '[]', '2026-06-01 10:37:41.797912+00', '2026-06-01 10:37:41.797912+00', NULL);
 INSERT INTO public.meal_log (id, facility_id, author_id, meal_date, meal_type, menu_text, photos, created_at, updated_at, deleted_at) VALUES (21, 1, 2, '2026-05-09', 'BREAKFAST', '흰쌀밥
-맑은 아욱국
-부드러운 계란찜
-시금치나물
-깍두기', '[]', '2026-06-01 10:37:41.797912+00', '2026-06-01 10:37:41.797912+00', NULL);
 INSERT INTO public.meal_log (id, facility_id, author_id, meal_date, meal_type, menu_text, photos, created_at, updated_at, deleted_at) VALUES (22, 1, 2, '2026-05-09', 'LUNCH', '흰쌀밥
-소고기 미역국
-고등어 구이
-애호박 나물볶음
-겉절이 김치', '[{"url": "/static/meals/sample/lunch_sample.jpg", "uploadedAt": "2026-05-27T12:00:00+09:00"}]', '2026-06-01 10:37:41.797912+00', '2026-06-01 10:37:41.797912+00', NULL);
 INSERT INTO public.meal_log (id, facility_id, author_id, meal_date, meal_type, menu_text, photos, created_at, updated_at, deleted_at) VALUES (23, 1, 2, '2026-05-09', 'DINNER', '보리잡곡밥
-순두부 백탕
-돈육 감자조림
-참나물무침
-배추김치', '[]', '2026-06-01 10:37:41.797912+00', '2026-06-01 10:37:41.797912+00', NULL);
 INSERT INTO public.meal_log (id, facility_id, author_id, meal_date, meal_type, menu_text, photos, created_at, updated_at, deleted_at) VALUES (24, 1, 2, '2026-05-09', 'SNACK', '달콤한 단호박죽
-따뜻한 우유', '[]', '2026-06-01 10:37:41.797912+00', '2026-06-01 10:37:41.797912+00', NULL);
 INSERT INTO public.meal_log (id, facility_id, author_id, meal_date, meal_type, menu_text, photos, created_at, updated_at, deleted_at) VALUES (25, 1, 2, '2026-05-10', 'BREAKFAST', '영양 야채죽
-계란국
-연두부 양념장
-숙주나물무침
-백김치', '[]', '2026-06-01 10:37:41.797912+00', '2026-06-01 10:37:41.797912+00', NULL);
 INSERT INTO public.meal_log (id, facility_id, author_id, meal_date, meal_type, menu_text, photos, created_at, updated_at, deleted_at) VALUES (26, 1, 2, '2026-05-10', 'LUNCH', '영양 곤드레밥
-구수한 배추된장국
-단호박 돼지갈비찜
-콩나물무침
-배추김치', '[{"url": "/static/meals/sample/lunch_sample2.jpg", "uploadedAt": "2026-05-26T12:00:00+09:00"}]', '2026-06-01 10:37:41.797912+00', '2026-06-01 10:37:41.797912+00', NULL);
 INSERT INTO public.meal_log (id, facility_id, author_id, meal_date, meal_type, menu_text, photos, created_at, updated_at, deleted_at) VALUES (27, 1, 2, '2026-05-10', 'DINNER', '흰쌀밥
-버섯 들깨탕
-야채 버섯불고기
-도라지나물볶음
-배추김치', '[]', '2026-06-01 10:37:41.797912+00', '2026-06-01 10:37:41.797912+00', NULL);
 INSERT INTO public.meal_log (id, facility_id, author_id, meal_date, meal_type, menu_text, photos, created_at, updated_at, deleted_at) VALUES (28, 1, 2, '2026-05-10', 'SNACK', '노란 군고구마
-새콤달콤 매실차', '[]', '2026-06-01 10:37:41.797912+00', '2026-06-01 10:37:41.797912+00', NULL);
 INSERT INTO public.meal_log (id, facility_id, author_id, meal_date, meal_type, menu_text, photos, created_at, updated_at, deleted_at) VALUES (29, 1, 2, '2026-05-11', 'BREAKFAST', '현미잡곡밥
-시원한 북어국
-고소한 두부부침
-김자반볶음
-배추김치', '[]', '2026-06-01 10:37:41.797912+00', '2026-06-01 10:37:41.797912+00', NULL);
 INSERT INTO public.meal_log (id, facility_id, author_id, meal_date, meal_type, menu_text, photos, created_at, updated_at, deleted_at) VALUES (30, 1, 2, '2026-05-11', 'LUNCH', '현미잡곡밥
-맑은 소갈비탕
-적어 구이
-무청 시래기 조림
-총각김치', '[]', '2026-06-01 10:37:41.797912+00', '2026-06-01 10:37:41.797912+00', NULL);
 INSERT INTO public.meal_log (id, facility_id, author_id, meal_date, meal_type, menu_text, photos, created_at, updated_at, deleted_at) VALUES (31, 1, 2, '2026-05-11', 'DINNER', '잡곡밥
-비지찌개
-삼치 엿장구이
-청경채무침
-깍두기', '[]', '2026-06-01 10:37:41.797912+00', '2026-06-01 10:37:41.797912+00', NULL);
 INSERT INTO public.meal_log (id, facility_id, author_id, meal_date, meal_type, menu_text, photos, created_at, updated_at, deleted_at) VALUES (32, 1, 2, '2026-05-11', 'SNACK', '생바나나
-마시는 요거트', '[]', '2026-06-01 10:37:41.797912+00', '2026-06-01 10:37:41.797912+00', NULL);
 INSERT INTO public.meal_log (id, facility_id, author_id, meal_date, meal_type, menu_text, photos, created_at, updated_at, deleted_at) VALUES (33, 1, 2, '2026-05-12', 'BREAKFAST', '흰쌀밥
-맑은 아욱국
-부드러운 계란찜
-시금치나물
-깍두기', '[]', '2026-06-01 10:37:41.797912+00', '2026-06-01 10:37:41.797912+00', NULL);
 INSERT INTO public.meal_log (id, facility_id, author_id, meal_date, meal_type, menu_text, photos, created_at, updated_at, deleted_at) VALUES (34, 1, 2, '2026-05-12', 'LUNCH', '흰쌀밥
-소고기 미역국
-고등어 구이
-애호박 나물볶음
-겉절이 김치', '[{"url": "/static/meals/sample/lunch_sample.jpg", "uploadedAt": "2026-05-27T12:00:00+09:00"}]', '2026-06-01 10:37:41.797912+00', '2026-06-01 10:37:41.797912+00', NULL);
 INSERT INTO public.meal_log (id, facility_id, author_id, meal_date, meal_type, menu_text, photos, created_at, updated_at, deleted_at) VALUES (35, 1, 2, '2026-05-12', 'DINNER', '보리잡곡밥
-순두부 백탕
-돈육 감자조림
-참나물무침
-배추김치', '[]', '2026-06-01 10:37:41.797912+00', '2026-06-01 10:37:41.797912+00', NULL);
 INSERT INTO public.meal_log (id, facility_id, author_id, meal_date, meal_type, menu_text, photos, created_at, updated_at, deleted_at) VALUES (36, 1, 2, '2026-05-12', 'SNACK', '달콤한 단호박죽
-따뜻한 우유', '[]', '2026-06-01 10:37:41.797912+00', '2026-06-01 10:37:41.797912+00', NULL);
 INSERT INTO public.meal_log (id, facility_id, author_id, meal_date, meal_type, menu_text, photos, created_at, updated_at, deleted_at) VALUES (37, 1, 2, '2026-05-13', 'BREAKFAST', '영양 야채죽
-계란국
-연두부 양념장
-숙주나물무침
-백김치', '[]', '2026-06-01 10:37:41.797912+00', '2026-06-01 10:37:41.797912+00', NULL);
 INSERT INTO public.meal_log (id, facility_id, author_id, meal_date, meal_type, menu_text, photos, created_at, updated_at, deleted_at) VALUES (38, 1, 2, '2026-05-13', 'LUNCH', '영양 곤드레밥
-구수한 배추된장국
-단호박 돼지갈비찜
-콩나물무침
-배추김치', '[{"url": "/static/meals/sample/lunch_sample2.jpg", "uploadedAt": "2026-05-26T12:00:00+09:00"}]', '2026-06-01 10:37:41.797912+00', '2026-06-01 10:37:41.797912+00', NULL);
 INSERT INTO public.meal_log (id, facility_id, author_id, meal_date, meal_type, menu_text, photos, created_at, updated_at, deleted_at) VALUES (39, 1, 2, '2026-05-13', 'DINNER', '흰쌀밥
-버섯 들깨탕
-야채 버섯불고기
-도라지나물볶음
-배추김치', '[]', '2026-06-01 10:37:41.797912+00', '2026-06-01 10:37:41.797912+00', NULL);
 INSERT INTO public.meal_log (id, facility_id, author_id, meal_date, meal_type, menu_text, photos, created_at, updated_at, deleted_at) VALUES (40, 1, 2, '2026-05-13', 'SNACK', '노란 군고구마
-새콤달콤 매실차', '[]', '2026-06-01 10:37:41.797912+00', '2026-06-01 10:37:41.797912+00', NULL);
 INSERT INTO public.meal_log (id, facility_id, author_id, meal_date, meal_type, menu_text, photos, created_at, updated_at, deleted_at) VALUES (41, 1, 2, '2026-05-14', 'BREAKFAST', '현미잡곡밥
-시원한 북어국
-고소한 두부부침
-김자반볶음
-배추김치', '[]', '2026-06-01 10:37:41.797912+00', '2026-06-01 10:37:41.797912+00', NULL);
 INSERT INTO public.meal_log (id, facility_id, author_id, meal_date, meal_type, menu_text, photos, created_at, updated_at, deleted_at) VALUES (42, 1, 2, '2026-05-14', 'LUNCH', '현미잡곡밥
-맑은 소갈비탕
-적어 구이
-무청 시래기 조림
-총각김치', '[]', '2026-06-01 10:37:41.797912+00', '2026-06-01 10:37:41.797912+00', NULL);
 INSERT INTO public.meal_log (id, facility_id, author_id, meal_date, meal_type, menu_text, photos, created_at, updated_at, deleted_at) VALUES (43, 1, 2, '2026-05-14', 'DINNER', '잡곡밥
-비지찌개
-삼치 엿장구이
-청경채무침
-깍두기', '[]', '2026-06-01 10:37:41.797912+00', '2026-06-01 10:37:41.797912+00', NULL);
 INSERT INTO public.meal_log (id, facility_id, author_id, meal_date, meal_type, menu_text, photos, created_at, updated_at, deleted_at) VALUES (44, 1, 2, '2026-05-14', 'SNACK', '생바나나
-마시는 요거트', '[]', '2026-06-01 10:37:41.797912+00', '2026-06-01 10:37:41.797912+00', NULL);
 INSERT INTO public.meal_log (id, facility_id, author_id, meal_date, meal_type, menu_text, photos, created_at, updated_at, deleted_at) VALUES (45, 1, 2, '2026-05-15', 'BREAKFAST', '흰쌀밥
-맑은 아욱국
-부드러운 계란찜
-시금치나물
-깍두기', '[]', '2026-06-01 10:37:41.797912+00', '2026-06-01 10:37:41.797912+00', NULL);
 INSERT INTO public.meal_log (id, facility_id, author_id, meal_date, meal_type, menu_text, photos, created_at, updated_at, deleted_at) VALUES (46, 1, 2, '2026-05-15', 'LUNCH', '흰쌀밥
-소고기 미역국
-고등어 구이
-애호박 나물볶음
-겉절이 김치', '[{"url": "/static/meals/sample/lunch_sample.jpg", "uploadedAt": "2026-05-27T12:00:00+09:00"}]', '2026-06-01 10:37:41.797912+00', '2026-06-01 10:37:41.797912+00', NULL);
 INSERT INTO public.meal_log (id, facility_id, author_id, meal_date, meal_type, menu_text, photos, created_at, updated_at, deleted_at) VALUES (47, 1, 2, '2026-05-15', 'DINNER', '보리잡곡밥
-순두부 백탕
-돈육 감자조림
-참나물무침
-배추김치', '[]', '2026-06-01 10:37:41.797912+00', '2026-06-01 10:37:41.797912+00', NULL);
 INSERT INTO public.meal_log (id, facility_id, author_id, meal_date, meal_type, menu_text, photos, created_at, updated_at, deleted_at) VALUES (48, 1, 2, '2026-05-15', 'SNACK', '달콤한 단호박죽
-따뜻한 우유', '[]', '2026-06-01 10:37:41.797912+00', '2026-06-01 10:37:41.797912+00', NULL);
 INSERT INTO public.meal_log (id, facility_id, author_id, meal_date, meal_type, menu_text, photos, created_at, updated_at, deleted_at) VALUES (49, 1, 2, '2026-05-16', 'BREAKFAST', '영양 야채죽
-계란국
-연두부 양념장
-숙주나물무침
-백김치', '[]', '2026-06-01 10:37:41.797912+00', '2026-06-01 10:37:41.797912+00', NULL);
 INSERT INTO public.meal_log (id, facility_id, author_id, meal_date, meal_type, menu_text, photos, created_at, updated_at, deleted_at) VALUES (50, 1, 2, '2026-05-16', 'LUNCH', '영양 곤드레밥
-구수한 배추된장국
-단호박 돼지갈비찜
-콩나물무침
-배추김치', '[{"url": "/static/meals/sample/lunch_sample2.jpg", "uploadedAt": "2026-05-26T12:00:00+09:00"}]', '2026-06-01 10:37:41.797912+00', '2026-06-01 10:37:41.797912+00', NULL);
 INSERT INTO public.meal_log (id, facility_id, author_id, meal_date, meal_type, menu_text, photos, created_at, updated_at, deleted_at) VALUES (51, 1, 2, '2026-05-16', 'DINNER', '흰쌀밥
-버섯 들깨탕
-야채 버섯불고기
-도라지나물볶음
-배추김치', '[]', '2026-06-01 10:37:41.797912+00', '2026-06-01 10:37:41.797912+00', NULL);
 INSERT INTO public.meal_log (id, facility_id, author_id, meal_date, meal_type, menu_text, photos, created_at, updated_at, deleted_at) VALUES (52, 1, 2, '2026-05-16', 'SNACK', '노란 군고구마
-새콤달콤 매실차', '[]', '2026-06-01 10:37:41.797912+00', '2026-06-01 10:37:41.797912+00', NULL);
 INSERT INTO public.meal_log (id, facility_id, author_id, meal_date, meal_type, menu_text, photos, created_at, updated_at, deleted_at) VALUES (53, 1, 2, '2026-05-17', 'BREAKFAST', '현미잡곡밥
-시원한 북어국
-고소한 두부부침
-김자반볶음
-배추김치', '[]', '2026-06-01 10:37:41.797912+00', '2026-06-01 10:37:41.797912+00', NULL);
 INSERT INTO public.meal_log (id, facility_id, author_id, meal_date, meal_type, menu_text, photos, created_at, updated_at, deleted_at) VALUES (54, 1, 2, '2026-05-17', 'LUNCH', '현미잡곡밥
-맑은 소갈비탕
-적어 구이
-무청 시래기 조림
-총각김치', '[]', '2026-06-01 10:37:41.797912+00', '2026-06-01 10:37:41.797912+00', NULL);
 INSERT INTO public.meal_log (id, facility_id, author_id, meal_date, meal_type, menu_text, photos, created_at, updated_at, deleted_at) VALUES (55, 1, 2, '2026-05-17', 'DINNER', '잡곡밥
-비지찌개
-삼치 엿장구이
-청경채무침
-깍두기', '[]', '2026-06-01 10:37:41.797912+00', '2026-06-01 10:37:41.797912+00', NULL);
 INSERT INTO public.meal_log (id, facility_id, author_id, meal_date, meal_type, menu_text, photos, created_at, updated_at, deleted_at) VALUES (56, 1, 2, '2026-05-17', 'SNACK', '생바나나
-마시는 요거트', '[]', '2026-06-01 10:37:41.797912+00', '2026-06-01 10:37:41.797912+00', NULL);
 INSERT INTO public.meal_log (id, facility_id, author_id, meal_date, meal_type, menu_text, photos, created_at, updated_at, deleted_at) VALUES (57, 1, 2, '2026-05-18', 'BREAKFAST', '흰쌀밥
-맑은 아욱국
-부드러운 계란찜
-시금치나물
-깍두기', '[]', '2026-06-01 10:37:41.797912+00', '2026-06-01 10:37:41.797912+00', NULL);
 INSERT INTO public.meal_log (id, facility_id, author_id, meal_date, meal_type, menu_text, photos, created_at, updated_at, deleted_at) VALUES (58, 1, 2, '2026-05-18', 'LUNCH', '흰쌀밥
-소고기 미역국
-고등어 구이
-애호박 나물볶음
-겉절이 김치', '[{"url": "/static/meals/sample/lunch_sample.jpg", "uploadedAt": "2026-05-27T12:00:00+09:00"}]', '2026-06-01 10:37:41.797912+00', '2026-06-01 10:37:41.797912+00', NULL);
 INSERT INTO public.meal_log (id, facility_id, author_id, meal_date, meal_type, menu_text, photos, created_at, updated_at, deleted_at) VALUES (59, 1, 2, '2026-05-18', 'DINNER', '보리잡곡밥
-순두부 백탕
-돈육 감자조림
-참나물무침
-배추김치', '[]', '2026-06-01 10:37:41.797912+00', '2026-06-01 10:37:41.797912+00', NULL);
 INSERT INTO public.meal_log (id, facility_id, author_id, meal_date, meal_type, menu_text, photos, created_at, updated_at, deleted_at) VALUES (60, 1, 2, '2026-05-18', 'SNACK', '달콤한 단호박죽
-따뜻한 우유', '[]', '2026-06-01 10:37:41.797912+00', '2026-06-01 10:37:41.797912+00', NULL);
 INSERT INTO public.meal_log (id, facility_id, author_id, meal_date, meal_type, menu_text, photos, created_at, updated_at, deleted_at) VALUES (61, 1, 2, '2026-05-19', 'BREAKFAST', '영양 야채죽
-계란국
-연두부 양념장
-숙주나물무침
-백김치', '[]', '2026-06-01 10:37:41.797912+00', '2026-06-01 10:37:41.797912+00', NULL);
 INSERT INTO public.meal_log (id, facility_id, author_id, meal_date, meal_type, menu_text, photos, created_at, updated_at, deleted_at) VALUES (62, 1, 2, '2026-05-19', 'LUNCH', '영양 곤드레밥
-구수한 배추된장국
-단호박 돼지갈비찜
-콩나물무침
-배추김치', '[{"url": "/static/meals/sample/lunch_sample2.jpg", "uploadedAt": "2026-05-26T12:00:00+09:00"}]', '2026-06-01 10:37:41.797912+00', '2026-06-01 10:37:41.797912+00', NULL);
 INSERT INTO public.meal_log (id, facility_id, author_id, meal_date, meal_type, menu_text, photos, created_at, updated_at, deleted_at) VALUES (63, 1, 2, '2026-05-19', 'DINNER', '흰쌀밥
-버섯 들깨탕
-야채 버섯불고기
-도라지나물볶음
-배추김치', '[]', '2026-06-01 10:37:41.797912+00', '2026-06-01 10:37:41.797912+00', NULL);
 INSERT INTO public.meal_log (id, facility_id, author_id, meal_date, meal_type, menu_text, photos, created_at, updated_at, deleted_at) VALUES (64, 1, 2, '2026-05-19', 'SNACK', '노란 군고구마
-새콤달콤 매실차', '[]', '2026-06-01 10:37:41.797912+00', '2026-06-01 10:37:41.797912+00', NULL);
 INSERT INTO public.meal_log (id, facility_id, author_id, meal_date, meal_type, menu_text, photos, created_at, updated_at, deleted_at) VALUES (65, 1, 2, '2026-05-20', 'BREAKFAST', '현미잡곡밥
-시원한 북어국
-고소한 두부부침
-김자반볶음
-배추김치', '[]', '2026-06-01 10:37:41.797912+00', '2026-06-01 10:37:41.797912+00', NULL);
 INSERT INTO public.meal_log (id, facility_id, author_id, meal_date, meal_type, menu_text, photos, created_at, updated_at, deleted_at) VALUES (66, 1, 2, '2026-05-20', 'LUNCH', '현미잡곡밥
-맑은 소갈비탕
-적어 구이
-무청 시래기 조림
-총각김치', '[]', '2026-06-01 10:37:41.797912+00', '2026-06-01 10:37:41.797912+00', NULL);
 INSERT INTO public.meal_log (id, facility_id, author_id, meal_date, meal_type, menu_text, photos, created_at, updated_at, deleted_at) VALUES (67, 1, 2, '2026-05-20', 'DINNER', '잡곡밥
-비지찌개
-삼치 엿장구이
-청경채무침
-깍두기', '[]', '2026-06-01 10:37:41.797912+00', '2026-06-01 10:37:41.797912+00', NULL);
 INSERT INTO public.meal_log (id, facility_id, author_id, meal_date, meal_type, menu_text, photos, created_at, updated_at, deleted_at) VALUES (68, 1, 2, '2026-05-20', 'SNACK', '생바나나
-마시는 요거트', '[]', '2026-06-01 10:37:41.797912+00', '2026-06-01 10:37:41.797912+00', NULL);
 INSERT INTO public.meal_log (id, facility_id, author_id, meal_date, meal_type, menu_text, photos, created_at, updated_at, deleted_at) VALUES (69, 1, 2, '2026-05-21', 'BREAKFAST', '흰쌀밥
-맑은 아욱국
-부드러운 계란찜
-시금치나물
-깍두기', '[]', '2026-06-01 10:37:41.797912+00', '2026-06-01 10:37:41.797912+00', NULL);
 INSERT INTO public.meal_log (id, facility_id, author_id, meal_date, meal_type, menu_text, photos, created_at, updated_at, deleted_at) VALUES (70, 1, 2, '2026-05-21', 'LUNCH', '흰쌀밥
-소고기 미역국
-고등어 구이
-애호박 나물볶음
-겉절이 김치', '[{"url": "/static/meals/sample/lunch_sample.jpg", "uploadedAt": "2026-05-27T12:00:00+09:00"}]', '2026-06-01 10:37:41.797912+00', '2026-06-01 10:37:41.797912+00', NULL);
 INSERT INTO public.meal_log (id, facility_id, author_id, meal_date, meal_type, menu_text, photos, created_at, updated_at, deleted_at) VALUES (71, 1, 2, '2026-05-21', 'DINNER', '보리잡곡밥
-순두부 백탕
-돈육 감자조림
-참나물무침
-배추김치', '[]', '2026-06-01 10:37:41.797912+00', '2026-06-01 10:37:41.797912+00', NULL);
 INSERT INTO public.meal_log (id, facility_id, author_id, meal_date, meal_type, menu_text, photos, created_at, updated_at, deleted_at) VALUES (72, 1, 2, '2026-05-21', 'SNACK', '달콤한 단호박죽
-따뜻한 우유', '[]', '2026-06-01 10:37:41.797912+00', '2026-06-01 10:37:41.797912+00', NULL);
 INSERT INTO public.meal_log (id, facility_id, author_id, meal_date, meal_type, menu_text, photos, created_at, updated_at, deleted_at) VALUES (73, 1, 2, '2026-05-22', 'BREAKFAST', '영양 야채죽
-계란국
-연두부 양념장
-숙주나물무침
-백김치', '[]', '2026-06-01 10:37:41.797912+00', '2026-06-01 10:37:41.797912+00', NULL);
 INSERT INTO public.meal_log (id, facility_id, author_id, meal_date, meal_type, menu_text, photos, created_at, updated_at, deleted_at) VALUES (74, 1, 2, '2026-05-22', 'LUNCH', '영양 곤드레밥
-구수한 배추된장국
-단호박 돼지갈비찜
-콩나물무침
-배추김치', '[{"url": "/static/meals/sample/lunch_sample2.jpg", "uploadedAt": "2026-05-26T12:00:00+09:00"}]', '2026-06-01 10:37:41.797912+00', '2026-06-01 10:37:41.797912+00', NULL);
 INSERT INTO public.meal_log (id, facility_id, author_id, meal_date, meal_type, menu_text, photos, created_at, updated_at, deleted_at) VALUES (75, 1, 2, '2026-05-22', 'DINNER', '흰쌀밥
-버섯 들깨탕
-야채 버섯불고기
-도라지나물볶음
-배추김치', '[]', '2026-06-01 10:37:41.797912+00', '2026-06-01 10:37:41.797912+00', NULL);
 INSERT INTO public.meal_log (id, facility_id, author_id, meal_date, meal_type, menu_text, photos, created_at, updated_at, deleted_at) VALUES (76, 1, 2, '2026-05-22', 'SNACK', '노란 군고구마
-새콤달콤 매실차', '[]', '2026-06-01 10:37:41.797912+00', '2026-06-01 10:37:41.797912+00', NULL);
 INSERT INTO public.meal_log (id, facility_id, author_id, meal_date, meal_type, menu_text, photos, created_at, updated_at, deleted_at) VALUES (77, 1, 2, '2026-05-23', 'BREAKFAST', '현미잡곡밥
-시원한 북어국
-고소한 두부부침
-김자반볶음
-배추김치', '[]', '2026-06-01 10:37:41.797912+00', '2026-06-01 10:37:41.797912+00', NULL);
 INSERT INTO public.meal_log (id, facility_id, author_id, meal_date, meal_type, menu_text, photos, created_at, updated_at, deleted_at) VALUES (78, 1, 2, '2026-05-23', 'LUNCH', '현미잡곡밥
-맑은 소갈비탕
-적어 구이
-무청 시래기 조림
-총각김치', '[]', '2026-06-01 10:37:41.797912+00', '2026-06-01 10:37:41.797912+00', NULL);
 INSERT INTO public.meal_log (id, facility_id, author_id, meal_date, meal_type, menu_text, photos, created_at, updated_at, deleted_at) VALUES (79, 1, 2, '2026-05-23', 'DINNER', '잡곡밥
-비지찌개
-삼치 엿장구이
-청경채무침
-깍두기', '[]', '2026-06-01 10:37:41.797912+00', '2026-06-01 10:37:41.797912+00', NULL);
 INSERT INTO public.meal_log (id, facility_id, author_id, meal_date, meal_type, menu_text, photos, created_at, updated_at, deleted_at) VALUES (80, 1, 2, '2026-05-23', 'SNACK', '생바나나
-마시는 요거트', '[]', '2026-06-01 10:37:41.797912+00', '2026-06-01 10:37:41.797912+00', NULL);
 INSERT INTO public.meal_log (id, facility_id, author_id, meal_date, meal_type, menu_text, photos, created_at, updated_at, deleted_at) VALUES (81, 1, 2, '2026-05-24', 'BREAKFAST', '흰쌀밥
-맑은 아욱국
-부드러운 계란찜
-시금치나물
-깍두기', '[]', '2026-06-01 10:37:41.797912+00', '2026-06-01 10:37:41.797912+00', NULL);
 INSERT INTO public.meal_log (id, facility_id, author_id, meal_date, meal_type, menu_text, photos, created_at, updated_at, deleted_at) VALUES (82, 1, 2, '2026-05-24', 'LUNCH', '흰쌀밥
-소고기 미역국
-고등어 구이
-애호박 나물볶음
-겉절이 김치', '[{"url": "/static/meals/sample/lunch_sample.jpg", "uploadedAt": "2026-05-27T12:00:00+09:00"}]', '2026-06-01 10:37:41.797912+00', '2026-06-01 10:37:41.797912+00', NULL);
 INSERT INTO public.meal_log (id, facility_id, author_id, meal_date, meal_type, menu_text, photos, created_at, updated_at, deleted_at) VALUES (83, 1, 2, '2026-05-24', 'DINNER', '보리잡곡밥
-순두부 백탕
-돈육 감자조림
-참나물무침
-배추김치', '[]', '2026-06-01 10:37:41.797912+00', '2026-06-01 10:37:41.797912+00', NULL);
 INSERT INTO public.meal_log (id, facility_id, author_id, meal_date, meal_type, menu_text, photos, created_at, updated_at, deleted_at) VALUES (84, 1, 2, '2026-05-24', 'SNACK', '달콤한 단호박죽
-따뜻한 우유', '[]', '2026-06-01 10:37:41.797912+00', '2026-06-01 10:37:41.797912+00', NULL);
 INSERT INTO public.meal_log (id, facility_id, author_id, meal_date, meal_type, menu_text, photos, created_at, updated_at, deleted_at) VALUES (85, 1, 2, '2026-05-25', 'BREAKFAST', '영양 야채죽
-계란국
-연두부 양념장
-숙주나물무침
-백김치', '[]', '2026-06-01 10:37:41.797912+00', '2026-06-01 10:37:41.797912+00', NULL);
 INSERT INTO public.meal_log (id, facility_id, author_id, meal_date, meal_type, menu_text, photos, created_at, updated_at, deleted_at) VALUES (86, 1, 2, '2026-05-25', 'LUNCH', '영양 곤드레밥
-구수한 배추된장국
-단호박 돼지갈비찜
-콩나물무침
-배추김치', '[{"url": "/static/meals/sample/lunch_sample2.jpg", "uploadedAt": "2026-05-26T12:00:00+09:00"}]', '2026-06-01 10:37:41.797912+00', '2026-06-01 10:37:41.797912+00', NULL);
 INSERT INTO public.meal_log (id, facility_id, author_id, meal_date, meal_type, menu_text, photos, created_at, updated_at, deleted_at) VALUES (87, 1, 2, '2026-05-25', 'DINNER', '흰쌀밥
-버섯 들깨탕
-야채 버섯불고기
-도라지나물볶음
-배추김치', '[]', '2026-06-01 10:37:41.797912+00', '2026-06-01 10:37:41.797912+00', NULL);
 INSERT INTO public.meal_log (id, facility_id, author_id, meal_date, meal_type, menu_text, photos, created_at, updated_at, deleted_at) VALUES (88, 1, 2, '2026-05-25', 'SNACK', '노란 군고구마
-새콤달콤 매실차', '[]', '2026-06-01 10:37:41.797912+00', '2026-06-01 10:37:41.797912+00', NULL);
 INSERT INTO public.meal_log (id, facility_id, author_id, meal_date, meal_type, menu_text, photos, created_at, updated_at, deleted_at) VALUES (89, 1, 2, '2026-05-26', 'BREAKFAST', '현미잡곡밥
-시원한 북어국
-고소한 두부부침
-김자반볶음
-배추김치', '[]', '2026-06-01 10:37:41.797912+00', '2026-06-01 10:37:41.797912+00', NULL);
 INSERT INTO public.meal_log (id, facility_id, author_id, meal_date, meal_type, menu_text, photos, created_at, updated_at, deleted_at) VALUES (90, 1, 2, '2026-05-26', 'LUNCH', '현미잡곡밥
-맑은 소갈비탕
-적어 구이
-무청 시래기 조림
-총각김치', '[]', '2026-06-01 10:37:41.797912+00', '2026-06-01 10:37:41.797912+00', NULL);
 INSERT INTO public.meal_log (id, facility_id, author_id, meal_date, meal_type, menu_text, photos, created_at, updated_at, deleted_at) VALUES (91, 1, 2, '2026-05-26', 'DINNER', '잡곡밥
-비지찌개
-삼치 엿장구이
-청경채무침
-깍두기', '[]', '2026-06-01 10:37:41.797912+00', '2026-06-01 10:37:41.797912+00', NULL);
 INSERT INTO public.meal_log (id, facility_id, author_id, meal_date, meal_type, menu_text, photos, created_at, updated_at, deleted_at) VALUES (92, 1, 2, '2026-05-26', 'SNACK', '생바나나
-마시는 요거트', '[]', '2026-06-01 10:37:41.797912+00', '2026-06-01 10:37:41.797912+00', NULL);
 INSERT INTO public.meal_log (id, facility_id, author_id, meal_date, meal_type, menu_text, photos, created_at, updated_at, deleted_at) VALUES (93, 1, 2, '2026-05-27', 'BREAKFAST', '흰쌀밥
-맑은 아욱국
-부드러운 계란찜
-시금치나물
-깍두기', '[]', '2026-06-01 10:37:41.797912+00', '2026-06-01 10:37:41.797912+00', NULL);
 INSERT INTO public.meal_log (id, facility_id, author_id, meal_date, meal_type, menu_text, photos, created_at, updated_at, deleted_at) VALUES (94, 1, 2, '2026-05-27', 'LUNCH', '흰쌀밥
-소고기 미역국
-고등어 구이
-애호박 나물볶음
-겉절이 김치', '[{"url": "/static/meals/sample/lunch_sample.jpg", "uploadedAt": "2026-05-27T12:00:00+09:00"}]', '2026-06-01 10:37:41.797912+00', '2026-06-01 10:37:41.797912+00', NULL);
 INSERT INTO public.meal_log (id, facility_id, author_id, meal_date, meal_type, menu_text, photos, created_at, updated_at, deleted_at) VALUES (95, 1, 2, '2026-05-27', 'DINNER', '보리잡곡밥
-순두부 백탕
-돈육 감자조림
-참나물무침
-배추김치', '[]', '2026-06-01 10:37:41.797912+00', '2026-06-01 10:37:41.797912+00', NULL);
 INSERT INTO public.meal_log (id, facility_id, author_id, meal_date, meal_type, menu_text, photos, created_at, updated_at, deleted_at) VALUES (96, 1, 2, '2026-05-27', 'SNACK', '달콤한 단호박죽
-따뜻한 우유', '[]', '2026-06-01 10:37:41.797912+00', '2026-06-01 10:37:41.797912+00', NULL);
 INSERT INTO public.meal_log (id, facility_id, author_id, meal_date, meal_type, menu_text, photos, created_at, updated_at, deleted_at) VALUES (97, 1, 2, '2026-05-28', 'BREAKFAST', '영양 야채죽
-계란국
-연두부 양념장
-숙주나물무침
-백김치', '[]', '2026-06-01 10:37:41.797912+00', '2026-06-01 10:37:41.797912+00', NULL);
 INSERT INTO public.meal_log (id, facility_id, author_id, meal_date, meal_type, menu_text, photos, created_at, updated_at, deleted_at) VALUES (98, 1, 2, '2026-05-28', 'LUNCH', '영양 곤드레밥
-구수한 배추된장국
-단호박 돼지갈비찜
-콩나물무침
-배추김치', '[{"url": "/static/meals/sample/lunch_sample2.jpg", "uploadedAt": "2026-05-26T12:00:00+09:00"}]', '2026-06-01 10:37:41.797912+00', '2026-06-01 10:37:41.797912+00', NULL);
 INSERT INTO public.meal_log (id, facility_id, author_id, meal_date, meal_type, menu_text, photos, created_at, updated_at, deleted_at) VALUES (99, 1, 2, '2026-05-28', 'DINNER', '흰쌀밥
-버섯 들깨탕
-야채 버섯불고기
-도라지나물볶음
-배추김치', '[]', '2026-06-01 10:37:41.797912+00', '2026-06-01 10:37:41.797912+00', NULL);
 INSERT INTO public.meal_log (id, facility_id, author_id, meal_date, meal_type, menu_text, photos, created_at, updated_at, deleted_at) VALUES (100, 1, 2, '2026-05-28', 'SNACK', '노란 군고구마
-새콤달콤 매실차', '[]', '2026-06-01 10:37:41.797912+00', '2026-06-01 10:37:41.797912+00', NULL);
 INSERT INTO public.meal_log (id, facility_id, author_id, meal_date, meal_type, menu_text, photos, created_at, updated_at, deleted_at) VALUES (101, 1, 2, '2026-05-29', 'BREAKFAST', '현미잡곡밥
-시원한 북어국
-고소한 두부부침
-김자반볶음
-배추김치', '[]', '2026-06-01 10:37:41.797912+00', '2026-06-01 10:37:41.797912+00', NULL);
 INSERT INTO public.meal_log (id, facility_id, author_id, meal_date, meal_type, menu_text, photos, created_at, updated_at, deleted_at) VALUES (102, 1, 2, '2026-05-29', 'LUNCH', '현미잡곡밥
-맑은 소갈비탕
-적어 구이
-무청 시래기 조림
-총각김치', '[]', '2026-06-01 10:37:41.797912+00', '2026-06-01 10:37:41.797912+00', NULL);
 INSERT INTO public.meal_log (id, facility_id, author_id, meal_date, meal_type, menu_text, photos, created_at, updated_at, deleted_at) VALUES (103, 1, 2, '2026-05-29', 'DINNER', '잡곡밥
-비지찌개
-삼치 엿장구이
-청경채무침
-깍두기', '[]', '2026-06-01 10:37:41.797912+00', '2026-06-01 10:37:41.797912+00', NULL);
 INSERT INTO public.meal_log (id, facility_id, author_id, meal_date, meal_type, menu_text, photos, created_at, updated_at, deleted_at) VALUES (104, 1, 2, '2026-05-29', 'SNACK', '생바나나
-마시는 요거트', '[]', '2026-06-01 10:37:41.797912+00', '2026-06-01 10:37:41.797912+00', NULL);
-
-
---
--- Data for Name: notice; Type: TABLE DATA; Schema: public; Owner: -
---
-
 INSERT INTO public.notice (id, resident_id, author_id, root_notice_id, version, structured_status, participated_programs, raw_memo, tone, ai_generated_texts, selected_draft_index, is_refined, final_polished_text, status, is_edited, sent_at, read_at, created_at, updated_at, deleted_at, memo_lang) VALUES (1, 1, 1, NULL, 1, '{"meal": "NORMAL", "mood": "GOOD", "health": "NORMAL", "medication": "DONE"}', '[{"title": "치매 예방 인지 훈련 🧩", "program_id": 5, "start_time": "10:00"}, {"title": "두뇌 자극 보드게임 🎲", "program_id": 6, "start_time": "14:00"}]', '점심 식사 맛있게 다 비우셨고, 손녀 자랑 많이 하심. 인지 치료 때 집중 잘 하셨습니다.', 'POLITE', '[{"text": "안녕하세요 보호자님! 오늘 순자 어르신께서는 오전 인지치료 프로그램에 참여하셔서 예쁜 색칠공부를 하셨습니다. 🎨 집중하시는 모습이 참 아름다우셨어요. 점심 식사로 나온 소고기미역국을 무척 좋아하셔서 한 그릇을 깨끗이 다 비우셨습니다. 😊 오후에는 손녀분 자랑을 끊임없이 하시는 모습에서 깊은 사랑과 애정을 느낄 수 있었습니다. 행복하고 평온한 하루를 보내셨습니다. 💕", "index": 0, "label": "A"}, {"text": "보호자님 안녕하세요! 😊 순자 어르신의 오늘 소식을 전해드립니다. 오늘 인지 훈련 시간에 다른 어르신들과 도란도란 이야기를 나누며 활발히 참여하셨습니다. 점심도 든든히 드셨고 식사 후 혈당 수치도 매우 안정적으로 조절되었습니다. 👍 오후에는 손녀분 이야기를 하시며 얼굴 가득 밝은 미소를 지으셨습니다. 즐거운 저녁 되세요. 😊", "index": 1, "label": "B"}, {"text": "순자 어르신 보호자님께 인사드립니다. 🌸 오늘 어르신께서는 인지 퍼즐 훈련을 하시며 높은 성취감을 느끼셨습니다. 🧩 요즘 손녀분 생각을 많이 하시는지 관련 추억담을 들려주시는 목소리가 무척 활기찼습니다. 식사도 잘 하셨고 건강 상태도 이상 없이 아주 양호하십니다. 편안한 밤 보내시기 바랍니다. 💖", "index": 2, "label": "C"}]', 0, false, '안녕하세요 보호자님! 오늘 순자 어르신께서는 오전 인지치료 프로그램에 참여하셔서 예쁜 색칠공부를 하셨습니다. 🎨 집중하시는 모습이 참 아름다우셨어요. 점심 식사로 나온 소고기미역국을 무척 좋아하셔서 한 그릇을 깨끗이 다 비우셨습니다. 😊 오후에는 손녀분 자랑을 끊임없이 하시는 모습에서 깊은 사랑과 애정을 느낄 수 있었습니다. 행복하고 평온한 하루를 보내셨습니다. 💕', 'SENT', false, '2026-05-04 17:00:00+00', '2026-05-04 19:30:00+00', '2026-06-01 10:37:41.867648+00', '2026-06-01 10:37:41.867648+00', NULL, 'ko');
 INSERT INTO public.notice (id, resident_id, author_id, root_notice_id, version, structured_status, participated_programs, raw_memo, tone, ai_generated_texts, selected_draft_index, is_refined, final_polished_text, status, is_edited, sent_at, read_at, created_at, updated_at, deleted_at, memo_lang) VALUES (2, 2, 1, NULL, 1, '{"meal": "FULL", "mood": "NORMAL", "health": "GOOD", "medication": "DONE"}', '[{"title": "치매 예방 인지 훈련 🧩", "program_id": 5, "start_time": "10:00"}, {"title": "두뇌 자극 보드게임 🎲", "program_id": 6, "start_time": "14:00"}]', '혈압 정상 유지됨. 노래 교실에서 마이크 잡고 박수치며 즐겁게 부르셨습니다.', 'POLITE', '[{"text": "안녕하세요 보호자님! 😊 오늘 복남 어르신께서는 오후 노래교실에서 가장 앞장서서 활약해 주셨습니다. 🎶 평소 즐겨 부르시던 노래가 흘러나오자 마이크를 두 손으로 잡고 박수치며 노래를 불러주셔서 교실 분위기가 아주 밝아졌습니다. 혈압도 정상적으로 잘 조절되고 있으며, 컨디션도 최상이십니다. 기분 좋은 하루 보내세요! 👍", "index": 0, "label": "A"}, {"text": "보호자님 안녕하세요! 🌸 복남 어르신의 오늘 소식입니다. 오늘 노래교실에서 옛 추억에 잠겨 함박웃음을 지으시며 노래를 열정적으로 소화하셨습니다. 🎤 지켜보는 요양사들에게도 큰 웃음을 선물해 주셨어요. 혈압과 체온 모두 정상이시며 기분이 매우 좋으셨습니다. 💖", "index": 1, "label": "B"}, {"text": "복남 어르신 보호자님 안녕하세요. 😊 어르신께서는 오늘 노래 부르기 활동에서 남다른 목소리로 다 함께 노래를 부르는 등 활기찬 모습이 두드러진 하루였습니다. 🎶 고혈압 관리 약도 정확하게 챙겨 드셨으며, 편안하게 저녁 휴식을 맞이하고 계십니다. 감사합니다. ✨", "index": 2, "label": "C"}]', 0, false, '안녕하세요 보호자님! 😊 오늘 복남 어르신께서는 오후 노래교실에서 가장 앞장서서 활약해 주셨습니다. 🎶 평소 즐겨 부르시던 노래가 흘러나오자 마이크를 두 손으로 잡고 박수치며 노래를 불러주셔서 교실 분위기가 아주 밝아졌습니다. 혈압도 정상적으로 잘 조절되고 있으며, 컨디션도 최상이십니다. 기분 좋은 하루 보내세요! 👍', 'SENT', false, '2026-05-04 17:10:00+00', '2026-05-04 19:45:00+00', '2026-06-01 10:37:41.867648+00', '2026-06-01 10:37:41.867648+00', NULL, 'ko');
 INSERT INTO public.notice (id, resident_id, author_id, root_notice_id, version, structured_status, participated_programs, raw_memo, tone, ai_generated_texts, selected_draft_index, is_refined, final_polished_text, status, is_edited, sent_at, read_at, created_at, updated_at, deleted_at, memo_lang) VALUES (3, 3, 1, NULL, 1, '{"meal": "NORMAL", "mood": "NORMAL", "health": "GOOD", "medication": "DONE"}', '[{"title": "치매 예방 인지 훈련 🧩", "program_id": 5, "start_time": "10:00"}, {"title": "두뇌 자극 보드게임 🎲", "program_id": 6, "start_time": "14:00"}]', '침상에서 가벼운 스트레칭 도와드렸습니다. 휠체어를 타고 거실에서 티비 보시며 미소를 지으셨습니다. 식사는 보통이었습니다.', 'POLITE', '[{"text": "보호자님 안녕하세요. 😊 오늘 정호 어르신께서는 침상에서 요양사의 지도 아래 손목과 다리 근육의 굳어짐을 방지하는 부드러운 침상 관절 스트레칭을 편안하게 받으셨습니다. 🧘‍♂️ 오후에는 안전하게 휠체어로 거실로 이동하셔서 어르신들과 함께 재미있는 텔레비전을 시청하며 환하게 미소를 보여주셨습니다. 📺 식사도 한 공기 보통 양으로 편안하게 다 소화하셨습니다. 평온한 하루를 보내셨습니다. 🍀", "index": 0, "label": "A"}, {"text": "안녕하세요 보호자님! 정호 어르신의 소식입니다. ✨ 오늘 오전에는 침대 위에서 근육이 굳지 않도록 가벼운 전신 이완 스트레칭을 꼼꼼하게 지원해 드렸습니다. 오후에는 휠체어에 탑승하셔 거실 넓은 공간에서 편하게 휴식을 취하시고, 정겨운 TV 방송을 감상하셨습니다. 식사와 투약도 잘 완료하셨습니다. 💖", "index": 1, "label": "B"}, {"text": "정호 어르신 보호자님께 소식 드립니다. 😊 어르신께서는 오늘 침상 휴식을 넉넉히 취하시며 부드러운 손마사지와 스트레칭 치료를 편안히 즐기셨습니다. 오후 간식 시간 즈음에는 휠체어를 타고 창가를 바라보며 바깥 풍경을 조용히 관찰하셨습니다. 📻 소화 상태와 체온 모두 정상 범주에 있습니다. 편안한 시간 보내세요. 🌸", "index": 2, "label": "C"}]', 0, false, '보호자님 안녕하세요. 😊 오늘 정호 어르신께서는 침상에서 요양사의 지도 아래 손목과 다리 근육의 굳어짐을 방지하는 부드러운 침상 관절 스트레칭을 편안하게 받으셨습니다. 🧘‍♂️ 오후에는 안전하게 휠체어로 거실로 이동하셔서 어르신들과 함께 재미있는 텔레비전을 시청하며 환하게 미소를 보여주셨습니다. 📺 식사도 한 공기 보통 양으로 편안하게 다 소화하셨습니다. 평온한 하루를 보내셨습니다. 🍀', 'SENT', false, '2026-05-04 17:20:00+00', '2026-05-04 20:00:00+00', '2026-06-01 10:37:41.867648+00', '2026-06-01 10:37:41.867648+00', NULL, 'ko');
@@ -618,54 +226,12 @@ INSERT INTO public.notice (id, resident_id, author_id, root_notice_id, version, 
 INSERT INTO public.notice (id, resident_id, author_id, root_notice_id, version, structured_status, participated_programs, raw_memo, tone, ai_generated_texts, selected_draft_index, is_refined, final_polished_text, status, is_edited, sent_at, read_at, created_at, updated_at, deleted_at, memo_lang) VALUES (85, 1, 1, NULL, 1, '{"meal": "NORMAL", "mood": "GOOD", "health": "GOOD", "medication": "DONE"}', '[{"title": "치매 예방 인지 훈련 🧩", "program_id": 53, "start_time": "10:00"}, {"title": "두뇌 자극 보드게임 🎲", "program_id": 54, "start_time": "14:00"}]', '체조 동작을 잘 따라 하셨고, 혈당 조절도 안정적입니다. 간식 단호박죽을 좋아하셨어요.', 'POLITE', '[{"text": "보호자님 안녕하세요! ☀️ 오늘 순자 어르신께서는 실버 체조 시간에 어깨와 팔을 가볍게 움직이시며 적극적으로 참여해 주셨습니다. 💪 혈당도 당뇨 기준치 이내로 잘 유지되어 건강 상태가 매우 우수합니다. 간식으로 나온 달콤한 단호박죽을 크게 좋아하셔서 맛있게 드셨습니다. 😊 늘 건강에 힘쓰고 있으니 안심하셔도 좋습니다. 🍀", "index": 0, "label": "A"}, {"text": "안녕하세요 보호자님! 오늘 순자 어르신께서는 실버 체조 활동으로 하루를 활기차게 시작하셨습니다. 🧘‍♀️ 굳어있던 몸을 쭉쭉 펴시며 시원해하셨어요. 당뇨식 간식으로 챙겨드린 단호박죽을 참 맛있게 드셔 주셔서 바라보는 직원들도 기뻤습니다. 혈당도 규칙적으로 잘 검사 중입니다. 💖", "index": 1, "label": "B"}, {"text": "순자 어르신의 하루 소식입니다. 😊 오늘 어르신께서는 아침 실버 스트레칭에 성실하게 함께하셨습니다. 당뇨 예방을 위해 철저한 간식 제어가 이루어졌고, 만족스럽게 단호박죽을 즐기셨습니다. 🥣 건강 수치 모두 양호하시며 평온하게 휴식을 취하고 계십니다. 따뜻한 하루 보내세요! ✨", "index": 2, "label": "C"}]', 0, false, '보호자님 안녕하세요! ☀️ 오늘 순자 어르신께서는 실버 체조 시간에 어깨와 팔을 가볍게 움직이시며 적극적으로 참여해 주셨습니다. 💪 혈당도 당뇨 기준치 이내로 잘 유지되어 건강 상태가 매우 우수합니다. 간식으로 나온 달콤한 단호박죽을 크게 좋아하셔서 맛있게 드셨습니다. 😊 늘 건강에 힘쓰고 있으니 안심하셔도 좋습니다. 🍀', 'SENT', false, '2026-06-01 17:00:00+00', NULL, '2026-06-01 10:37:41.867648+00', '2026-06-01 10:37:41.867648+00', NULL, 'ko');
 INSERT INTO public.notice (id, resident_id, author_id, root_notice_id, version, structured_status, participated_programs, raw_memo, tone, ai_generated_texts, selected_draft_index, is_refined, final_polished_text, status, is_edited, sent_at, read_at, created_at, updated_at, deleted_at, memo_lang) VALUES (86, 2, 1, NULL, 1, '{"meal": "NORMAL", "mood": "GOOD", "health": "GOOD", "medication": "DONE"}', '[{"title": "치매 예방 인지 훈련 🧩", "program_id": 53, "start_time": "10:00"}, {"title": "두뇌 자극 보드게임 🎲", "program_id": 54, "start_time": "14:00"}]', '원예 치료 시간에 화분에 흙을 잘 채워주셨습니다. 혈압도 안정적이고 점심 생선구이를 다 드셨습니다.', 'POLITE', '[{"text": "안녕하세요 보호자님! 오늘 복남 어르신께서는 원예 치료 꽃꽂이 활동에 매우 섬세하게 참여해 주셨습니다. 🌸 화분에 조심스럽게 흙을 채우고 예쁜 꽃을 정성껏 심어주셨어요. 점심 식사로 차려진 생선구이 반찬도 뼈를 잘 발라 무척 맛있게 드셨습니다. 😊 혈압 수치도 지극히 양호하며 평온히 잘 계십니다. 🍀", "index": 0, "label": "A"}, {"text": "보호자님 안녕하세요! 😊 오늘 복남 어르신은 요양원 마당의 작은 식물 화분을 꾸미는 원예 미술 시간에 참여하셨습니다. 🌱 초록 흙을 만지며 예전 정원을 가꾸던 때가 생각나신다며 밝게 웃으셨습니다. 식사도 생선 구이와 함께 다 드셨고 혈압약 복용도 완수하셨습니다. 💖", "index": 1, "label": "B"}, {"text": "복남 어르신 소식 전해드립니다. ✨ 오늘 어르신은 원예 프로그램에서 흙과 식물을 보며 마음의 치유를 받는 평화로운 시간을 보냈습니다. 🪴 입맛이 좋으셨는지 생선구이를 남김없이 드시며 식사도 성공적으로 마치셨습니다. 신체 기능 및 혈압 모두 모니터링상 안정 상태이십니다. 🌟", "index": 2, "label": "C"}]', 0, false, '안녕하세요 보호자님! 오늘 복남 어르신께서는 원예 치료 꽃꽂이 활동에 매우 섬세하게 참여해 주셨습니다. 🌸 화분에 조심스럽게 흙을 채우고 예쁜 꽃을 정성껏 심어주셨어요. 점심 식사로 차려진 생선구이 반찬도 뼈를 잘 발라 무척 맛있게 드셨습니다. 😊 혈압 수치도 지극히 양호하며 평온히 잘 계십니다. 🍀', 'SENT', false, '2026-06-01 17:10:00+00', NULL, '2026-06-01 10:37:41.867648+00', '2026-06-01 10:37:41.867648+00', NULL, 'ko');
 INSERT INTO public.notice (id, resident_id, author_id, root_notice_id, version, structured_status, participated_programs, raw_memo, tone, ai_generated_texts, selected_draft_index, is_refined, final_polished_text, status, is_edited, sent_at, read_at, created_at, updated_at, deleted_at, memo_lang) VALUES (87, 3, 1, NULL, 1, '{"meal": "LITTLE", "mood": "GOOD", "health": "GOOD", "medication": "DONE"}', '[{"title": "치매 예방 인지 훈련 🧩", "program_id": 53, "start_time": "10:00"}, {"title": "두뇌 자극 보드게임 🎲", "program_id": 54, "start_time": "14:00"}]', '관절 마사지 도중 시원해 하셨고, 휠체어를 타고 다도 명상 프로그램에 참여하여 음악을 잘 들으셨습니다.', 'POLITE', '[{"text": "보호자님 안녕하세요. 🍵 오늘 정호 어르신께서는 굳어 있는 어깨와 다리 근육을 풀어드리는 침상 관절 마사지 시간에 무척 시원해하시며 편안한 표정을 지어주셨습니다. 😊 오후에는 휠체어로 다도 명상실로 이동하여 따뜻한 찻잔의 향을 느끼시며 조용히 흐르는 한옥 음악을 귀 기울여 들으셨습니다. 식사도 잘 소화하셨고 건강히 지내고 계십니다. 💖", "index": 0, "label": "A"}, {"text": "안녕하세요 보호자님! 😊 오늘 정호 어르신은 휠체어를 이용하여 찻잔의 온도와 음악을 공유하는 다도 프로그램에 차분히 동행하셨습니다. 프로그램 진행 내내 평화롭게 클래식 음율을 감상하셨습니다. 🎶 물리치료사의 세심한 관절 마사지도 제공해 드렸는데 미소를 띠며 호응해 주셨습니다. 건강한 저녁 되시기 바랍니다. 🍀", "index": 1, "label": "B"}, {"text": "정호 어르신 보호자님께 안부 전합니다. 🌸 오늘 어르신은 침상 위에서 개인 어깨 마사지 케어를 받으시며 시원한 휴식을 즐기셨습니다. 오후 프로그램에는 편안한 휠체어를 사용해 차를 우려 마시며 전통 음악을 함께 경청하셨습니다. 식욕과 소화 모두 양호하며 규칙적인 케어가 이어졌습니다. ✨", "index": 2, "label": "C"}]', 0, false, '보호자님 안녕하세요. 🍵 오늘 정호 어르신께서는 굳어 있는 어깨와 다리 근육을 풀어드리는 침상 관절 마사지 시간에 무척 시원해하시며 편안한 표정을 지어주셨습니다. 😊 오후에는 휠체어로 다도 명상실로 이동하여 따뜻한 찻잔의 향을 느끼시며 조용히 흐르는 한옥 음악을 귀 기울여 들으셨습니다. 식사도 잘 소화하셨고 건강히 지내고 계십니다. 💖', 'SENT', false, '2026-06-01 17:20:00+00', NULL, '2026-06-01 10:37:41.867648+00', '2026-06-01 10:37:41.867648+00', NULL, 'ko');
-
-
---
--- Data for Name: notice_board; Type: TABLE DATA; Schema: public; Owner: -
---
-
 INSERT INTO public.notice_board (id, facility_id, author_id, title, content, created_at, updated_at, deleted_at) VALUES (1, 1, 3, '🌸 어버이날 감사 특별 행사 및 보호자 간접 참여 안내', '안녕하세요, 행복요양원 보호자 여러분.
-
-5월 8일 어버이날을 맞이하여 원내 어르신들을 모시고 카네이션 달아드리기 및 특별 감사 드림 행사를 진행합니다.
-
-감염 예방을 위해 직접 방문이 어려우신 보호자님들을 위하여, 행사 당일 실시간 사진 및 비대면 화상 통화를 적극적으로 지원해 드릴 예정이오니 많은 관심과 신청 바랍니다.
-
-항상 어르신들을 부모님처럼 소중히 모시는 행복요양원이 되겠습니다.', '2026-05-04 09:00:00+00', '2026-05-04 09:00:00+00', NULL);
 INSERT INTO public.notice_board (id, facility_id, author_id, title, content, created_at, updated_at, deleted_at) VALUES (2, 1, 3, '🧹 5월 원내 전체 위생 소독 및 봄맞이 대청소 일정', '안녕하십니까, 시설본부입니다.
-
-어르신들의 안전하고 쾌적한 생활 환경을 유지하기 위해 5월 10일(일요일) 13:00부터 17:00까지 원내 전체 특별 방역 및 생활실 대청소를 실시합니다.
-
-해당 시간 동안 어르신들은 별도로 마련된 안전 대기실에서 보호를 받으실 예정이며, 방역 작업 중에는 면회가 제한되오니 면회 일정을 잡으실 때 참고해 주시면 감사하겠습니다.', '2026-05-08 10:30:00+00', '2026-05-08 10:30:00+00', NULL);
 INSERT INTO public.notice_board (id, facility_id, author_id, title, content, created_at, updated_at, deleted_at) VALUES (3, 1, 3, '👕 어르신 하절기 의복 교체 및 소지품 정돈 요청', '안녕하세요. 행복요양원 간호부입니다.
-
-최근 낮 기온이 크게 올라감에 따라 어르신들의 하복 의류 준비가 필요한 시기입니다. 보호자님들께서는 이번 주말 방문 시 어르신들이 입으실 수 있는 얇은 하복(반팔, 얇은 긴바지 등)을 3~4벌 준비해 주시어 담당 간호사에게 전달 부탁드립니다.
-
-더불어 보관 중이던 두꺼운 겨울철 의복은 위생 관리를 위해 가정으로 회수해 주시길 부탁드립니다.', '2026-05-13 11:00:00+00', '2026-05-13 11:00:00+00', NULL);
 INSERT INTO public.notice_board (id, facility_id, author_id, title, content, created_at, updated_at, deleted_at) VALUES (4, 1, 3, '🚒 2분기 정기 소방 합동 대피 안전 훈련 실시 안내', '보호자님들께 알립니다.
-
-행복요양원은 재난 발생 시 어르신들의 신속하고 안전한 대피 조치를 위해 관할 소방서와 함께하는 합동 대피 훈련을 5월 20일(수요일) 오후 3시에 진행합니다.
-
-훈련 시 소방 경보음 및 사이렌 소리가 들릴 수 있으나 실제 상황이 아니오니 인근 지역 주민분들과 내방객분들께서는 당황하지 마시고 직원의 안내에 협조해 주시기를 바랍니다.', '2026-05-18 14:00:00+00', '2026-05-18 14:00:00+00', NULL);
 INSERT INTO public.notice_board (id, facility_id, author_id, title, content, created_at, updated_at, deleted_at) VALUES (5, 1, 3, '💻 2026년도 상반기 비대면 보호자 간담회 개최 공지', '안녕하십니까, 행복요양원 원장입니다.
-
-요양원 운영 현황과 하반기 주요 프로그램 계획을 안내해 드리고 보호자님들의 고견을 수렴하기 위해 온라인 간담회를 개최합니다.
-
-- 일시: 2026년 5월 27일(수) 오후 7시 ~ 8시
-- 방법: Zoom 비대면 온라인 회의 (접속 링크는 개별 문자 전송)
-- 주요 내용: 시설 리노베이션 안내, 영양 관리 현황 보고, 질의응답
-
-바쁘시더라도 자리를 함께하시어 따뜻한 동행이 이어질 수 있기를 희망합니다.', '2026-05-22 15:30:00+00', '2026-05-22 15:30:00+00', NULL);
 INSERT INTO public.notice_board (id, facility_id, author_id, title, content, created_at, updated_at, deleted_at) VALUES (6, 1, 3, '📋 6월 식단표 및 가정통신문 정기 공유 안내', '보호자 여러분 안녕하십니까.
-
-다가오는 6월 한 달 동안 어르신들의 영양 균형과 소화기능을 최우선으로 고려하여 맞춘 영양 식단표와 6월 요양원 주요 소식 및 가정통신문을 전달해 드립니다.
-
-제철 야채와 보양식 식단 구성 등 다가오는 더위에 어르신들의 기력이 떨어지지 않도록 철저히 대비하겠습니다. 세부 식단 파일은 첨부 캘린더나 식단 조회를 통해 실시간 확인하실 수 있습니다.', '2026-05-29 09:00:00+00', '2026-05-29 09:00:00+00', NULL);
-
-
---
--- Data for Name: program; Type: TABLE DATA; Schema: public; Owner: -
---
-
 INSERT INTO public.program (id, facility_id, program_date, start_time, title, description, created_at, updated_at, deleted_at) VALUES (1, 1, '2026-05-01', '10:00:00', '신나는 실버 노래 교실 🎶', '추억의 가요와 민요를 따라 부르며 스트레스를 해소하고 폐활량을 높였습니다.', '2026-06-01 10:37:41.759075+00', '2026-06-01 10:37:41.759075+00', NULL);
 INSERT INTO public.program (id, facility_id, program_date, start_time, title, description, created_at, updated_at, deleted_at) VALUES (2, 1, '2026-05-01', '14:00:00', '전통 다도 명상 시간 🍵', '따뜻한 녹차와 함께 명상을 하며 한 주의 긴장을 풀고 차분히 마음을 다스렸습니다.', '2026-06-01 10:37:41.759075+00', '2026-06-01 10:37:41.759075+00', NULL);
 INSERT INTO public.program (id, facility_id, program_date, start_time, title, description, created_at, updated_at, deleted_at) VALUES (3, 1, '2026-05-02', '14:00:00', '주말 명작 극장 시네마 데이 🎬', '어르신들이 좋아하시는 고전 영화를 대형 스크린으로 상영하고 간식을 즐겼습니다.', '2026-06-01 10:37:41.759075+00', '2026-06-01 10:37:41.759075+00', NULL);
@@ -770,12 +336,6 @@ INSERT INTO public.program (id, facility_id, program_date, start_time, title, de
 INSERT INTO public.program (id, facility_id, program_date, start_time, title, description, created_at, updated_at, deleted_at) VALUES (102, 1, '2026-06-29', '14:00:00', '두뇌 자극 보드게임 🎲', '집중력과 전략적 사고를 유도하는 가벼운 카드 매칭 및 보드게임을 진행했습니다.', '2026-06-01 10:37:41.759075+00', '2026-06-01 10:37:41.759075+00', NULL);
 INSERT INTO public.program (id, facility_id, program_date, start_time, title, description, created_at, updated_at, deleted_at) VALUES (103, 1, '2026-06-30', '10:00:00', '실버 건강 스트레칭 체조 🧘‍♀️', '전신 근육을 이완하고 혈액 순환을 돕는 가벼운 맨손 체조 활동을 진행했습니다.', '2026-06-01 10:37:41.759075+00', '2026-06-01 10:37:41.759075+00', NULL);
 INSERT INTO public.program (id, facility_id, program_date, start_time, title, description, created_at, updated_at, deleted_at) VALUES (104, 1, '2026-06-30', '14:00:00', '건강 아로마 발 마사지 🦶', '아로마 오일을 사용해 피로를 풀고 어르신들의 숙면을 돕는 발 마사지 치료를 진행했습니다.', '2026-06-01 10:37:41.759075+00', '2026-06-01 10:37:41.759075+00', NULL);
-
-
---
--- Data for Name: report; Type: TABLE DATA; Schema: public; Owner: -
---
-
 INSERT INTO public.report (id, resident_id, author_id, period_start, period_end, recorded_days, stats_summary, source_notice_ids, tone, ai_generated_text, final_text, status, sent_at, read_at, created_at, updated_at, deleted_at) VALUES (1, 1, 2, '2026-05-04', '2026-05-10', 7, '{"meal": {"FULL": 2, "LITTLE": 2, "NORMAL": 3, "REFUSED": 0}, "mood": {"GOOD": 5, "NORMAL": 2, "ANXIOUS": 0}, "health": {"GOOD": 5, "NORMAL": 2, "NEEDS_OBSERVATION": 0}, "topPrograms": [{"count": 1, "title": "치매"}, {"count": 1, "title": "두뇌"}], "recordedDays": 7}', '[1, 4, 7, 10, 13, 16, 19]', 'POLITE', '이번 주 순자 어르신께서는 대부분 기분이 매우 좋으셨고 식사도 만족스럽게 드셨습니다. 😊 인지 치료와 미술 활동에 몰입하며 활력을 보이셨고, 🎨 면회 때마다 즐거운 웃음을 띠며 한 주를 보내셨습니다. 혈당도 인슐린 및 식이 조절을 통해 정상 범위로 철저히 유지 중이오니 안심하셔도 괜찮습니다. 늘 평온하고 복되게 모시겠습니다. 💖', '이번 주 순자 어르신께서는 대부분 기분이 매우 좋으셨고 식사도 만족스럽게 드셨습니다. 😊 인지 치료와 미술 활동에 몰입하며 활력을 보이셨고, 🎨 면회 때마다 즐거운 웃음을 띠며 한 주를 보내셨습니다. 혈당도 인슐린 및 식이 조절을 통해 정상 범위로 철저히 유지 중이오니 안심하셔도 괜찮습니다. 늘 평온하고 복되게 모시겠습니다. 💖', 'SENT', '2026-05-10 18:00:00+00', '2026-05-10 20:30:00+00', '2026-06-01 10:37:42.044692+00', '2026-06-01 10:37:42.044692+00', NULL);
 INSERT INTO public.report (id, resident_id, author_id, period_start, period_end, recorded_days, stats_summary, source_notice_ids, tone, ai_generated_text, final_text, status, sent_at, read_at, created_at, updated_at, deleted_at) VALUES (2, 2, 2, '2026-05-04', '2026-05-10', 7, '{"meal": {"FULL": 4, "LITTLE": 0, "NORMAL": 3, "REFUSED": 0}, "mood": {"GOOD": 5, "NORMAL": 2, "ANXIOUS": 0}, "health": {"GOOD": 5, "NORMAL": 2, "NEEDS_OBSERVATION": 0}, "topPrograms": [{"count": 1, "title": "치매"}, {"count": 1, "title": "두뇌"}], "recordedDays": 7}', '[2, 5, 8, 11, 14, 17, 20]', 'POLITE', '이번 주 복남 어르신께서는 노래교실과 다도 프로그램에 참여하여 우수한 컨디션을 유지하셨습니다. 🎶 흥이 나실 때 손뼉을 활짝 치며 옛 노랫가락을 힘껏 부르시는 적극적인 태도로 모두에게 힘을 주셨습니다. 🎤 혈압도 지정된 시간에 약을 거르지 않고 복용하셔 안전 수치 내에 계십니다. 건강하고 에너지가 넘치는 보람찬 한 주였습니다. 👍', '이번 주 복남 어르신께서는 노래교실과 다도 프로그램에 참여하여 우수한 컨디션을 유지하셨습니다. 🎶 흥이 나실 때 손뼉을 활짝 치며 옛 노랫가락을 힘껏 부르시는 적극적인 태도로 모두에게 힘을 주셨습니다. 🎤 혈압도 지정된 시간에 약을 거르지 않고 복용하셔 안전 수치 내에 계십니다. 건강하고 에너지가 넘치는 보람찬 한 주였습니다. 👍', 'SENT', '2026-05-10 18:00:00+00', '2026-05-10 20:30:00+00', '2026-06-01 10:37:42.044692+00', '2026-06-01 10:37:42.044692+00', NULL);
 INSERT INTO public.report (id, resident_id, author_id, period_start, period_end, recorded_days, stats_summary, source_notice_ids, tone, ai_generated_text, final_text, status, sent_at, read_at, created_at, updated_at, deleted_at) VALUES (3, 3, 2, '2026-05-04', '2026-05-10', 7, '{"meal": {"FULL": 0, "LITTLE": 3, "NORMAL": 4, "REFUSED": 0}, "mood": {"GOOD": 5, "NORMAL": 2, "ANXIOUS": 0}, "health": {"GOOD": 5, "NORMAL": 0, "NEEDS_OBSERVATION": 2}, "topPrograms": [{"count": 1, "title": "치매"}, {"count": 1, "title": "두뇌"}], "recordedDays": 7}', '[3, 6, 9, 12, 15, 18, 21]', 'POLITE', '이번 주 정호 어르신께서는 침상 위에서 요양사와 관절 유연성 강화를 위한 이완 스트레칭을 온화하게 수행하셨습니다. 🧘‍♂️ 소화가 용이한 부드러운 유동식을 하루 세 차례 정량 공급받아 체력을 고르게 채우셨습니다. 오후에는 휠체어 편안한 자리에 탑승하셔 거실 티비나 가벼운 라디오 음악을 감상하시며 편안하게 휴식을 즐기셨습니다. 늘 정성을 다하는 케어를 보여드리겠습니다. 🍀', '이번 주 정호 어르신께서는 침상 위에서 요양사와 관절 유연성 강화를 위한 이완 스트레칭을 온화하게 수행하셨습니다. 🧘‍♂️ 소화가 용이한 부드러운 유동식을 하루 세 차례 정량 공급받아 체력을 고르게 채우셨습니다. 오후에는 휠체어 편안한 자리에 탑승하셔 거실 티비나 가벼운 라디오 음악을 감상하시며 편안하게 휴식을 즐기셨습니다. 늘 정성을 다하는 케어를 보여드리겠습니다. 🍀', 'SENT', '2026-05-10 18:00:00+00', '2026-05-10 20:30:00+00', '2026-06-01 10:37:42.044692+00', '2026-06-01 10:37:42.044692+00', NULL);
@@ -788,12 +348,6 @@ INSERT INTO public.report (id, resident_id, author_id, period_start, period_end,
 INSERT INTO public.report (id, resident_id, author_id, period_start, period_end, recorded_days, stats_summary, source_notice_ids, tone, ai_generated_text, final_text, status, sent_at, read_at, created_at, updated_at, deleted_at) VALUES (10, 1, 2, '2026-05-25', '2026-05-31', 7, '{"meal": {"FULL": 2, "LITTLE": 2, "NORMAL": 3, "REFUSED": 0}, "mood": {"GOOD": 5, "NORMAL": 2, "ANXIOUS": 0}, "health": {"GOOD": 6, "NORMAL": 1, "NEEDS_OBSERVATION": 0}, "topPrograms": [{"count": 1, "title": "치매"}, {"count": 1, "title": "두뇌"}], "recordedDays": 7}', '[64, 67, 70, 73, 76, 79, 82]', 'POLITE', '5월 마지막 주 순자 어르신의 종합 리포트입니다. 🌱 한 주 내내 매일 아침 체조에 기쁘게 참석해 주시며 가벼운 운동으로 시작하셨습니다. 식단 조절도 차분히 이루어져 당뇨 관련 혈당 체크가 매번 평온한 수준으로 관리되었습니다. 사랑하는 손녀 자랑으로 모두에게 긍정의 에너지를 듬뿍 전해주셨습니다. 항상 평온함 속에 모시겠습니다. 💖', '5월 마지막 주 순자 어르신의 종합 리포트입니다. 🌱 한 주 내내 매일 아침 체조에 기쁘게 참석해 주시며 가벼운 운동으로 시작하셨습니다. 식단 조절도 차분히 이루어져 당뇨 관련 혈당 체크가 매번 평온한 수준으로 관리되었습니다. 사랑하는 손녀 자랑으로 모두에게 긍정의 에너지를 듬뿍 전해주셨습니다. 항상 평온함 속에 모시겠습니다. 💖', 'SENT', '2026-05-31 18:00:00+00', NULL, '2026-06-01 10:37:42.044692+00', '2026-06-01 10:37:42.044692+00', NULL);
 INSERT INTO public.report (id, resident_id, author_id, period_start, period_end, recorded_days, stats_summary, source_notice_ids, tone, ai_generated_text, final_text, status, sent_at, read_at, created_at, updated_at, deleted_at) VALUES (11, 2, 2, '2026-05-25', '2026-05-31', 7, '{"meal": {"FULL": 3, "LITTLE": 0, "NORMAL": 4, "REFUSED": 0}, "mood": {"GOOD": 6, "NORMAL": 1, "ANXIOUS": 0}, "health": {"GOOD": 5, "NORMAL": 2, "NEEDS_OBSERVATION": 0}, "topPrograms": [{"count": 1, "title": "치매"}, {"count": 1, "title": "두뇌"}], "recordedDays": 7}', '[65, 68, 71, 74, 77, 80, 83]', 'POLITE', '5월 넷째 주 복남 어르신은 맑은 날씨 속에 요양원 마당을 거닐며 꽃들을 심으시는 원예 프로젝트에 흙손을 더해주셨습니다. 🌸 기분 좋게 밥과 반찬을 섭취해 체력을 기르셨고, 음악에 맞춰 리듬을 맞추며 한 주를 흥겹게 수놓으셨습니다. 복용약 관리도 이상무입니다. 다음 한 주도 복되게 동행하겠습니다. ✨', '5월 넷째 주 복남 어르신은 맑은 날씨 속에 요양원 마당을 거닐며 꽃들을 심으시는 원예 프로젝트에 흙손을 더해주셨습니다. 🌸 기분 좋게 밥과 반찬을 섭취해 체력을 기르셨고, 음악에 맞춰 리듬을 맞추며 한 주를 흥겹게 수놓으셨습니다. 복용약 관리도 이상무입니다. 다음 한 주도 복되게 동행하겠습니다. ✨', 'SENT', '2026-05-31 18:00:00+00', NULL, '2026-06-01 10:37:42.044692+00', '2026-06-01 10:37:42.044692+00', NULL);
 INSERT INTO public.report (id, resident_id, author_id, period_start, period_end, recorded_days, stats_summary, source_notice_ids, tone, ai_generated_text, final_text, status, sent_at, read_at, created_at, updated_at, deleted_at) VALUES (12, 3, 2, '2026-05-25', '2026-05-31', 7, '{"meal": {"FULL": 0, "LITTLE": 4, "NORMAL": 3, "REFUSED": 0}, "mood": {"GOOD": 6, "NORMAL": 1, "ANXIOUS": 0}, "health": {"GOOD": 5, "NORMAL": 0, "NEEDS_OBSERVATION": 2}, "topPrograms": [{"count": 1, "title": "치매"}, {"count": 1, "title": "두뇌"}], "recordedDays": 7}', '[66, 69, 72, 75, 78, 81, 84]', 'POLITE', '5월 마지막 주 정호 어르신은 무리한 활동 없이 침대 위에서 잔잔한 고전 음악을 편히 들으시며 스트레칭을 실천하셨습니다. 🎵 가래나 기침 등 호흡기 불안 증세도 전혀 확인되지 않아 가슴 편안히 한 주를 나셨습니다. 매일 오후 휠체어로 안전히 이동해 거실에서 티비를 바라보며 부드러운 휴식을 영위하셨습니다. 매일 안전하고 소중하게 정성을 쏟겠습니다. 🍀', '5월 마지막 주 정호 어르신은 무리한 활동 없이 침대 위에서 잔잔한 고전 음악을 편히 들으시며 스트레칭을 실천하셨습니다. 🎵 가래나 기침 등 호흡기 불안 증세도 전혀 확인되지 않아 가슴 편안히 한 주를 나셨습니다. 매일 오후 휠체어로 안전히 이동해 거실에서 티비를 바라보며 부드러운 휴식을 영위하셨습니다. 매일 안전하고 소중하게 정성을 쏟겠습니다. 🍀', 'SENT', '2026-05-31 18:00:00+00', NULL, '2026-06-01 10:37:42.044692+00', '2026-06-01 10:37:42.044692+00', NULL);
-
-
---
--- Data for Name: schedule_event; Type: TABLE DATA; Schema: public; Owner: -
---
-
 INSERT INTO public.schedule_event (id, facility_id, author_id, event_date, event_type, title, description, resident_id, created_at, updated_at, deleted_at) VALUES (1, 1, 2, '2026-05-05', 'HOLIDAY', '어린이날 🎈', '법정 공휴일 (원내 정상 프로그램 미운영, 기본 케어 지원)', NULL, '2026-06-01 10:37:42.31415+00', '2026-06-01 10:37:42.31415+00', NULL);
 INSERT INTO public.schedule_event (id, facility_id, author_id, event_date, event_type, title, description, resident_id, created_at, updated_at, deleted_at) VALUES (2, 1, 2, '2026-05-08', 'HOLIDAY', '어버이날 🌹', '요양원 카네이션 수여 및 어버이 은혜 감사 특별 찬치', NULL, '2026-06-01 10:37:42.31415+00', '2026-06-01 10:37:42.31415+00', NULL);
 INSERT INTO public.schedule_event (id, facility_id, author_id, event_date, event_type, title, description, resident_id, created_at, updated_at, deleted_at) VALUES (3, 1, 2, '2026-05-24', 'HOLIDAY', '부처님오신날 🪷', '법정 공휴일', NULL, '2026-06-01 10:37:42.31415+00', '2026-06-01 10:37:42.31415+00', NULL);
@@ -806,78 +360,6 @@ INSERT INTO public.schedule_event (id, facility_id, author_id, event_date, event
 INSERT INTO public.schedule_event (id, facility_id, author_id, event_date, event_type, title, description, resident_id, created_at, updated_at, deleted_at) VALUES (10, 1, 2, '2026-06-24', 'FACILITY_EVENT', '6월 생신 어르신 합동 생신 파티 🎉', '축하 케이크 촛불 불기 및 노래 자랑 선물 증정', NULL, '2026-06-01 10:37:42.31415+00', '2026-06-01 10:37:42.31415+00', NULL);
 INSERT INTO public.schedule_event (id, facility_id, author_id, event_date, event_type, title, description, resident_id, created_at, updated_at, deleted_at) VALUES (11, 1, 2, '2026-05-08', 'BIRTHDAY', '🎂 한말례 어르신 생신', '행복요양원 가족 모두가 진심으로 한말례 어르신의 생신을 축하드립니다! 🎉', 6, '2026-06-01 10:37:42.31415+00', '2026-06-01 10:37:42.31415+00', NULL);
 
-
---
--- Name: album_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
---
-
-SELECT pg_catalog.setval('public.album_id_seq', 2, true);
-
-
---
--- Name: inquiry_answer_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
---
-
-SELECT pg_catalog.setval('public.inquiry_answer_id_seq', 1, false);
-
-
---
--- Name: inquiry_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
---
-
-SELECT pg_catalog.setval('public.inquiry_id_seq', 13, true);
-
-
---
--- Name: meal_log_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
---
-
-SELECT pg_catalog.setval('public.meal_log_id_seq', 104, true);
-
-
---
--- Name: notice_board_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
---
-
-SELECT pg_catalog.setval('public.notice_board_id_seq', 6, true);
-
-
---
--- Name: notice_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
---
-
-SELECT pg_catalog.setval('public.notice_id_seq', 87, true);
-
-
---
--- Name: program_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
---
-
-SELECT pg_catalog.setval('public.program_id_seq', 104, true);
-
-
---
--- Name: report_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
---
-
-SELECT pg_catalog.setval('public.report_id_seq', 12, true);
-
-
---
--- Name: schedule_event_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
---
-
-SELECT pg_catalog.setval('public.schedule_event_id_seq', 11, true);
-
-
---
--- PostgreSQL database dump complete
---
-
-\unrestrict uSrYN0FQKzmG6MGGhC5bBCTLqL6mP3JHHK6gclSEVL8LUodI34e9nrERIdJ3pE7
-
-
--- 시퀀스 보정
 SELECT setval('program_id_seq',        COALESCE((SELECT MAX(id) FROM program), 1));
 SELECT setval('notice_id_seq',         COALESCE((SELECT MAX(id) FROM notice), 1));
 SELECT setval('report_id_seq',         COALESCE((SELECT MAX(id) FROM report), 1));
@@ -887,5 +369,4 @@ SELECT setval('meal_log_id_seq',       COALESCE((SELECT MAX(id) FROM meal_log), 
 SELECT setval('schedule_event_id_seq', COALESCE((SELECT MAX(id) FROM schedule_event), 1));
 SELECT setval('album_id_seq',          COALESCE((SELECT MAX(id) FROM album), 1));
 
--- FK 복원
 SET session_replication_role = 'DEFAULT';
