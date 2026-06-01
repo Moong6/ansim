@@ -69,19 +69,22 @@ def init_db() -> None:
     # 4. 이전 배포에서 누락됐을 수 있는 컬럼 보정 (idempotent)
     _apply_column_patches()
 
-    # 5. 비어 있으면 시드 투입
+    # 5. 기본 시드 (사용자·어르신) 투입
     db: Session = SessionLocal()
     try:
         count = db.execute(text("SELECT COUNT(*) FROM facility")).scalar_one()
         if count == 0:
-            print("[startup] 시드 데이터 투입 시작...")
+            print("[startup] 기본 시드 데이터 투입 시작...")
             _seed_basic(db)
         else:
-            print(f"[startup] 시드 스킵 (facility {count}건 존재)")
+            print(f"[startup] 기본 시드 스킵 (facility {count}건 존재)")
     except Exception as e:
         print(f"[startup] 시드 오류: {e}")
     finally:
         db.close()
+
+    # 6. 데모 콘텐츠 로드 (알림장·리포트·식단 등) — notice 테이블이 비어 있을 때만
+    _load_demo_data_if_empty()
 
     print("[startup] DB 초기화 완료")
 
@@ -177,3 +180,45 @@ def _seed_basic(db: Session) -> None:
 
     db.commit()
     print("[startup] 기본 시드 데이터 투입 완료")
+
+
+# ─── 데모 콘텐츠 로드 ──────────────────────────────────────────────────────────
+
+def _load_demo_data_if_empty() -> None:
+    """notice 테이블이 비어 있으면 demo_data.sql을 실행해 전체 데모 데이터 로드"""
+    from pathlib import Path
+
+    db: Session = SessionLocal()
+    try:
+        count = db.execute(text("SELECT COUNT(*) FROM notice")).scalar_one()
+        if count > 0:
+            print(f"[startup] 데모 데이터 스킵 (notice {count}건 이미 존재)")
+            return
+    finally:
+        db.close()
+
+    sql_path = Path(__file__).parent / "demo_data.sql"
+    if not sql_path.exists():
+        print("[startup] demo_data.sql 없음 — 데모 데이터 스킵")
+        return
+
+    print("[startup] 데모 데이터 로드 시작...")
+    sql_text = sql_path.read_text(encoding="utf-8")
+
+    # 세미콜론으로 구문 분리 후 개별 실행 (psycopg 멀티-스테이트먼트 제한 대응)
+    stmts = [s.strip() for s in sql_text.split(";") if s.strip()]
+
+    with engine.connect() as conn:
+        for stmt in stmts:
+            try:
+                conn.execute(text(stmt))
+            except Exception as e:
+                # 중복 데이터 등 무시 가능한 오류는 스킵
+                err_str = str(e).lower()
+                if "duplicate" in err_str or "already exists" in err_str:
+                    pass
+                else:
+                    print(f"[startup] 데모 데이터 구문 오류 (스킵): {str(e)[:120]}")
+        conn.commit()
+
+    print("[startup] 데모 데이터 로드 완료")
