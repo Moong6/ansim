@@ -8,7 +8,7 @@
 
 from datetime import datetime
 
-from sqlalchemy import BigInteger, Column, DateTime, ForeignKey, String, Table, Text
+from sqlalchemy import BigInteger, Column, DateTime, ForeignKey, String, Table, Text, text
 from sqlalchemy.dialects.postgresql import JSONB
 from sqlalchemy.orm import Mapped, mapped_column, relationship as orm_relationship
 from sqlalchemy.sql import func
@@ -38,7 +38,7 @@ class Album(Base):
     activity_date: Mapped[datetime]       = mapped_column(DateTime(timezone=False), nullable=False)
     title        : Mapped[str]            = mapped_column(String(100), nullable=False)
     description  : Mapped[str | None]     = mapped_column(Text)
-    photos       : Mapped[list]           = mapped_column(JSONB, nullable=False, default=list, server_default="'[]'")
+    photos       : Mapped[list]           = mapped_column(JSONB, nullable=False, default=list, server_default=text("'[]'"))
     created_at   : Mapped[datetime]       = mapped_column(DateTime(timezone=True), server_default=func.now(), nullable=False)
     updated_at   : Mapped[datetime]       = mapped_column(DateTime(timezone=True), server_default=func.now(), nullable=False)
     deleted_at   : Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
