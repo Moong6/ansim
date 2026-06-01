@@ -1,3 +1,4 @@
+from contextlib import asynccontextmanager
 from pathlib import Path
 
 from fastapi import FastAPI, HTTPException, Request
@@ -7,17 +8,26 @@ from fastapi.responses import JSONResponse
 from fastapi.staticfiles import StaticFiles
 
 from app.core.config import settings  # noqa: F401  — validates .env on startup
+from app.db.startup import init_db
 from app.routers import albums, auth, board, home, inquiries, meals, notices, parent, programs, reports, residents, schedule, uploads, users
 
-app = FastAPI(title="케어알림장 API", version="0.1.0")
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    """앱 시작 시 DB 스키마 + 시드 보장 (Render 첫 배포 대응)"""
+    init_db()
+    yield
+
+
+app = FastAPI(title="케어알림장 API", version="0.1.0", lifespan=lifespan)
 
 app.add_middleware(
     CORSMiddleware,
     allow_origins=[
         "http://localhost:5173",
         "https://moong6.github.io",
-        "https://filter-reverence-radish.ngrok-free.dev",
     ],
+    allow_origin_regex=r"https://.*\.onrender\.com|https://.*\.ngrok-free\.dev",
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],

@@ -1,0 +1,38 @@
+services:
+  - type: web
+    name: ansim-api
+    env: python
+    region: singapore
+    plan: free
+    rootDir: Backend
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn app.main:app --host 0.0.0.0 --port $PORT
+    envVars:
+      - key: DATABASE_URL
+        fromDatabase:
+          name: ansim-db
+          property: connectionString
+      - key: JWT_SECRET
+        generateValue: true
+      - key: GEMINI_API_KEY
+        sync: false          # Render 대시보드에서 직접 입력
+      - key: GEMINI_MODEL
+        value: gemini-2.5-flash
+      - key: GEMINI_FALLBACK_MODEL
+        value: gemini-2.5-flash
+      - key: CLASSIFICATION_THRESHOLD
+        value: "0.6"
+      - key: UPLOAD_DIR
+        value: /tmp/uploads
+      - key: STATIC_BASE_URL
+        value: https://ansim-api.onrender.com/static
+      - key: UPLOAD_MAX_SIZE_MB
+        value: "5"
+      - key: UPLOAD_ALLOWED_EXT
+        value: jpg,jpeg,png,webp
+
+databases:
+  - name: ansim-db
+    plan: free
+    region: singapore
+    databaseName: care_notice
