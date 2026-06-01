@@ -1,0 +1,8 @@
+{
+  "permissions": {
+    "allow": [
+      "PowerShell(uv --version)",
+      "PowerShell($env:Path -split ';' | Where-Object { $_ -match 'node|npm' })"
+    ]
+  }
+}

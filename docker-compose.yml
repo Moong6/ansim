@@ -1,0 +1,42 @@
+# 케어알림장 — Docker Compose
+# PostgreSQL 16 만 컨테이너로 격리. 백엔드·프론트는 호스트에서 직접 실행.
+# (개발 효율 우선: 호스트에서 직접 띄워야 핫리로드·디버깅·로그가 빠름)
+#
+# 사용:
+#   docker compose up -d        # 백그라운드 시작
+#   docker compose down         # 종료 (데이터 보존)
+#   docker compose down -v      # 종료 + 볼륨 삭제 (DB 완전 초기화)
+#   docker compose logs -f db   # 로그 보기
+#
+# 환경 변수: backend/.env 의 DATABASE_URL 과 일치해야 함
+#   DATABASE_URL=postgresql://carealimjang:carealimjang@localhost:5432/carealimjang
+
+services:
+  db:
+    image: postgres:16-alpine
+    container_name: carealimjang-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: carealimjang
+      POSTGRES_PASSWORD: carealimjang
+      POSTGRES_DB: carealimjang
+      # 한국어 정렬·로케일 (선택)
+      LANG: ko_KR.UTF-8
+      POSTGRES_INITDB_ARGS: "--encoding=UTF-8 --locale=C"
+    ports:
+      - "5432:5432"
+    volumes:
+      - carealimjang-db-data:/var/lib/postgresql/data
+      # 1차 시드 init_db.sql 을 컨테이너 첫 실행 시 자동 적용
+      # (이미 데이터가 있으면 적용 안 됨 — 완전 초기화 후 다시 띄우면 적용)
+      - ./backend/init_db.sql:/docker-entrypoint-initdb.d/01-init.sql:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U carealimjang -d carealimjang"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+      start_period: 10s
+
+volumes:
+  carealimjang-db-data:
+    name: carealimjang-db-data
