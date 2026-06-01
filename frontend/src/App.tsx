@@ -1,5 +1,5 @@
 import { useEffect } from 'react'
-import { BrowserRouter, Navigate, Route, Routes, useNavigate } from 'react-router-dom'
+import { HashRouter, Navigate, Route, Routes, useNavigate } from 'react-router-dom'
 import LoginPage from './pages/LoginPage'
 import LoginParentPage from './pages/LoginParentPage'
 import DashboardPage from './pages/DashboardPage'
@@ -97,7 +97,7 @@ function PublicParentRoute({ children }: { children: React.ReactNode }) {
 
 export default function App() {
   return (
-    <BrowserRouter>
+    <HashRouter>
       <SessionWatcher />
       <Routes>
         {/* ── 직원 로그인 ── */}
@@ -155,6 +155,6 @@ export default function App() {
         {/* ── 폴백 ── */}
         <Route path="*" element={<Navigate to="/home" replace />} />
       </Routes>
-    </BrowserRouter>
+    </HashRouter>
   )
 }

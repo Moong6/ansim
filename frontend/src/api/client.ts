@@ -7,7 +7,8 @@
  * 흐름: 컴포넌트 → Zustand store → api/client.ts → FastAPI
  */
 
-const BASE_URL = ''
+// 로컬 개발: '' (Vite 프록시 사용) / 프로덕션: ngrok URL
+const BASE_URL: string = (import.meta.env.VITE_API_BASE_URL as string) ?? ''
 
 // ─── 토큰 관리 ────────────────────────────────────────────────────────────────
 // store가 아닌 모듈-스코프 변수로 보관. setToken은 로그인 성공 시 호출.
