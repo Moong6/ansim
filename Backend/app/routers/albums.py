@@ -51,9 +51,10 @@ def _to_participant(r: Resident) -> ParticipantOut:
 def _to_list_item(album: Album, user: AppUser) -> AlbumListItem:
     photos = album.photos or []
     thumbnail = photos[0]["url"] if photos else None
+    act_date = album.activity_date.date() if isinstance(album.activity_date, datetime) else album.activity_date
     return AlbumListItem(
         id=album.id,
-        activityDate=album.activity_date,
+        activityDate=act_date,
         title=album.title,
         description=album.description,
         photoCount=len(photos),
@@ -66,9 +67,10 @@ def _to_list_item(album: Album, user: AppUser) -> AlbumListItem:
 
 
 def _to_detail(album: Album, user: AppUser) -> AlbumDetail:
+    act_date = album.activity_date.date() if isinstance(album.activity_date, datetime) else album.activity_date
     return AlbumDetail(
         id=album.id,
-        activityDate=album.activity_date,
+        activityDate=act_date,
         title=album.title,
         description=album.description,
         photos=[PhotoItemOut(url=p["url"]) for p in (album.photos or [])],

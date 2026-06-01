@@ -804,9 +804,10 @@ def get_parent_albums(
         photos = album.photos or []
         # 본인 어르신만 필터링하여 참여자로 표시
         visible_residents = [r for r in album.residents if r.id in resident_ids]
+        act_date = album.activity_date.date() if isinstance(album.activity_date, datetime) else album.activity_date
         items.append(AlbumListItemParent(
             id=album.id,
-            activityDate=album.activity_date,
+            activityDate=act_date,
             title=album.title,
             description=album.description,
             photoCount=len(photos),
@@ -847,10 +848,11 @@ def get_parent_album_detail(
 
     visible_residents = [r for r in album.residents if r.id in resident_ids]
 
+    act_date = album.activity_date.date() if isinstance(album.activity_date, datetime) else album.activity_date
     return AlbumDetailParentResponse(
         album=AlbumDetailParent(
             id=album.id,
-            activityDate=album.activity_date,
+            activityDate=act_date,
             title=album.title,
             description=album.description,
             photos=[PhotoItemOut(url=p["url"]) for p in (album.photos or [])],
